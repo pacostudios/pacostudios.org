@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://pacostudios.org
+
+# Sitemaps
+Sitemap: https://pacostudios.org/sitemap.xml
