@@ -24,6 +24,7 @@ const publicsans = Public_Sans({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://pacostudios.org"),
   title: "Paco Studios | Web Design, Branding & UX/UI in Melbourne",
   description:
     " We build websites, brands, and 3D experiences for startups and businesses in Melbourne and beyond. Paco Studios makes digital simple.",
@@ -50,6 +51,20 @@ export const metadata = {
     "immersive",
     "websites",
   ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://pacostudios.org",
+  },
   openGraph: {
     title: "Paco Studios | Web Design, Branding & UX/UI in Melbourne",
     description:
@@ -128,8 +143,10 @@ export default function RootLayout({ children }) {
                 logo: "https://pacostudios.org/paco.png",
                 contactPoint: {
                   "@type": "ContactPoint",
-                  telephone: "‪+61-0470541254‬",
+                  telephone: "+61470541254",
                   contactType: "customer service",
+                  areaServed: "AU",
+                  availableLanguage: "en",
                 },
               }),
             }}
@@ -141,12 +158,8 @@ export default function RootLayout({ children }) {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
                 url: "https://pacostudios.org/",
-                potentialAction: {
-                  "@type": "SearchAction",
-                  target:
-                    "https://pacostudios.org/search?q={search_term_string}",
-                  "query-input": "required name=search_term_string",
-                },
+                name: "Paco Studios",
+                description: "Web Design, Branding & UX/UI in Melbourne",
               }),
             }}
           />
