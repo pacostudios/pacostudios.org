@@ -131,6 +131,13 @@ export default function RootLayout({ children }) {
         <body
           className={`${montserrat.variable} ${publicsans.variable} antialiased`}
         >
+          <noscript>
+            <div style={{ padding: "20px", textAlign: "center" }}>
+              <h1>Paco Studios</h1>
+              <p>Web Design, Branding & UX/UI in Melbourne</p>
+              <p>We build websites, brands, and 3D experiences for startups and businesses in Melbourne and beyond.</p>
+            </div>
+          </noscript>
           {children}
           <script
             type="application/ld+json"
