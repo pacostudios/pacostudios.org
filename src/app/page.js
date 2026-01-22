@@ -630,7 +630,7 @@ export default function Home() {
                         href="mailto:info@pacostudio.com"
                         className="text-sm lg:text-2xl hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
                       >
-                        info@pacostudios.com
+                        info@pacostudios.org
                       </a>
                     </div>
                     <hr />
