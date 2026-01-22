@@ -52,6 +52,12 @@ function Preloader2() {
             justify-content: center;
           }
 
+          /* Hide preloader for search engine crawlers */
+          @media (prefers-reduced-motion: reduce) {
+            .preloader2-center-container {
+              display: none;
+            }
+          }
           .loader {
             width: 150px;
             height: 150px;
