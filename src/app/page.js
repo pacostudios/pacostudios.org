@@ -22,6 +22,7 @@ import PreloaderNew from "./components/PreloaderNew";
 import ProjectButton from "./components/ProjectButton";
 import { FaWhatsapp } from "react-icons/fa6";
 import Preloader2 from "./components/Preloader2";
+import TechMarquee from "./components/TechMarquee";
 
 export default function Home() {
   const [phone, setPhone] = useState("");
@@ -372,8 +373,12 @@ export default function Home() {
           <StackingCard />
         </section>
 
+        <div>
+          <TechMarquee/>
+        </div>
+
         <div className="px-4 lg:px-16">
-          <div className="py-[5rem] lg:py-[10rem]">
+          <div className="pb-[5rem] lg:pb-[10rem]">
             <div className="mb-8 md:mb-12">
               <div className="bg-orange-500 text-black px-4 py-2 md:px-6 md:py-3 inline-flex items-center">
                 <div className="w-3 h-3 bg-black rounded-full mr-2 md:mr-3"></div>
