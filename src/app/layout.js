@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Montserrat, Public_Sans } from "next/font/google";
 import { ReactLenis } from "lenis/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 import "./globals.css";
 
@@ -171,6 +172,7 @@ export default function RootLayout({ children }) {
             }}
           />
         </body>
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-XXXXXXXXXX"} />
       </html>
     </ReactLenis>
   );
