@@ -1,8 +1,8 @@
 "use client";
-import project1 from "@/app/assets/project1.jpg";
-import project2 from "@/app/assets/project2.jpg";
-import project3 from "@/app/assets/poornaya_img.jpg";
-import project4 from "@/app/assets/project4.jpg";
+import project1 from "@/app/assets/project1.webp";
+import project2 from "@/app/assets/project2.webp";
+import project3 from "@/app/assets/poornaya_img.webp";
+import project4 from "@/app/assets/glenroy.webp";
 
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
@@ -12,14 +12,14 @@ export const StackingCard = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
 
   const projects = [
-    {
-      id: 1,
-      image: project1,
-      title: "Project 1",
-      description: "Click to view Project 1",
-      link: "https://arabianskyme.com/",
-      transform: "rotate-4",
-    },
+    // {
+    //   id: 1,
+    //   image: project1,
+    //   title: "Project 1",
+    //   description: "Click to view Project 1",
+    //   link: "https://arabianskyme.com/",
+    //   transform: "rotate-4",
+    // },
     {
       id: 2,
       image: project2,
@@ -36,14 +36,14 @@ export const StackingCard = () => {
       link: "https://www.poornaya.com/",
       transform: "rotate-4 scale-96 translate-x-4 translate-y-2",
     },
-    // {
-    //   id: 4,
-    //   image: project4,
-    //   title: "Project 4",
-    //   description: "Click to view Project 3",
-    //   link: "/project3", // Replace with your actual links
-    //   transform: "-rotate-4 scale-95",
-    // },
+    {
+      id: 4,
+      image: project4,
+      title: "Project 4",
+      description: "Click to view Project 3",
+      link: "https://www.glenroysports.com.au/", // Replace with your actual links
+      transform: "-rotate-4 scale-95",
+    },
   ];
 
   const handleCardClick = (link) => {
@@ -67,7 +67,7 @@ export const StackingCard = () => {
               >
                 <Image
                   src={project.image.src}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  className="w-full h-full object-fit transition-transform duration-300 group-hover:scale-110"
                   width={1200}
                   height={1200}
                   alt={project.title}
