@@ -30,6 +30,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [popFinished, setPopFinished] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState(null);
 
   // Popular country codes
@@ -49,8 +50,12 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    // Hide preloader after 6 seconds (or when your actual content loads)
-    const timer = setTimeout(() => setLoading(false), 4000);
+    // Hide preloader after 1.0 seconds
+    const timer = setTimeout(() => {
+      setLoading(false);
+      // Mark pop animations as finished 1.4 seconds after they start
+      setTimeout(() => setPopFinished(true), 1400);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -200,11 +205,11 @@ export default function Home() {
     <>
       {loading && <Preloader2 onComplete={() => setLoading(false)} />}
       <Navbar />
-      <div className=" relative">
-        <section id="home">
+      <div className="relative">
+        {/* <section id="home">
           <div className="flex items-center justify-center mt-4 sm:mt-6">
             <div className="relative">
-              {/* <div className="flex items-baseline">
+              <div className="flex items-baseline">
                 <span className="font-black text-black text-5xl sm:text-[100px] md:text-[120px] lg:text-[200px] xl:text-[360px] 2xl:text-[485px]">
                   P
                 </span>
@@ -217,21 +222,58 @@ export default function Home() {
                 <span className="font-black text-black text-5xl sm:text-[100px] md:text-[120px] lg:text-[200px] xl:text-[360px] 2xl:text-[485px]">
                   O
                 </span>
-              </div> */}
+              </div>
 
               <h1 className="font-bold uppercase text-[35vw] leading-[0.80] tracking-tighter text-black dark:text-[#FFE9D1]">
                 p<span className="text-[#EB6E00]">a</span>co
               </h1>
               <div className="absolute -bottom-6 lg:-bottom-8 right-0 left-0 flex justify-end sm:justify-end">
                 <span className="text-lg lg:text-[3.3vw] font-medium text-black dark:text-white font-[Public_Sans] pr-5 lg:pr-[6rem] leading-1">
-                  <TextAnimate animation="slideLeft" by="character">
+                  <TextAnimate animation="slideLeft" by="character" delay={2.4} duration={0.33}>
                     STUDIOS
                   </TextAnimate>
                 </span>
               </div>
             </div>
+          </div> */}
+        <section id="home" className="relative">
+          <div className="flex text-[23vw] md:text-[20vw] justify-center items-center font-semibold leading-none mt-10 md:mt-18">
+            <p
+              className={`${loading ? "opacity-0" : `opacity-100 ${!popFinished ? "animate-pop-letter" : ""}`}`}
+              style={{ animationDelay: "0ms" }}
+            >
+              P
+            </p>
+            <div
+              className={`bg-[#EB6E00] px-4 md:px-7 lg:px-10 py-2 md:py-0 rounded-md h-[20vw] md:h-[15vw] lg:h-90 flex items-center shadow-[6px_6px_0px_#000000] dark:shadow-[6px_6px_0px_#FFFFFF] lg:shadow-[10px_10px_0px_#000000] lg:dark:shadow-[10px_10px_0px_#FFFFFF] cursor-pointer mx-1 md:mx-2 opacity-0 ${loading ? "opacity-0" : `opacity-100 ${!popFinished ? "animate-pop-badge" : "hover-wiggle"}`
+                }`}
+              style={{ animationDelay: "100ms" }}
+            >
+              <p className="text-white dark:text-white p-1 leading-none rotate-[3deg]">A</p>
+            </div>
+
+            <p
+              className={`${loading ? "opacity-0" : `opacity-100 ${!popFinished ? "animate-pop-letter" : ""}`}`}
+              style={{ animationDelay: "200ms" }}
+            >
+              C
+            </p>
+            <p
+              className={`${loading ? "opacity-0" : `opacity-100 ${!popFinished ? "animate-pop-letter" : ""}`}`}
+              style={{ animationDelay: "300ms" }}
+            >
+              O
+            </p>
+          </div>
+          <div className="absolute -bottom-8 lg:-bottom-8 right-0 left-0 flex justify-center sm:justify-end">
+            <span className="text-lg lg:text-[3.3vw] font-medium text-black dark:text-white font-[Public_Sans] pr-0 sm:pr-5 lg:pr-[6rem] leading-1">
+              <TextAnimate animation="slideLeft" by="character" delay={2.4} duration={1}>
+                STUDIOS
+              </TextAnimate>
+            </span>
           </div>
         </section>
+        {/* </section> */}
 
         <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1.5fr] gap-4 lg:gap-0 mt-20 lg:mt-40  mb-10 px-4 lg:px-16">
           <div className="inline-flex flex-col justify-start items-start gap-4 sm:gap-6">
@@ -374,7 +416,7 @@ export default function Home() {
         </section>
 
         <div>
-          <TechMarquee/>
+          <TechMarquee />
         </div>
 
         <div className="px-4 lg:px-16">
@@ -394,11 +436,10 @@ export default function Home() {
               {features.map((item, index) => (
                 <div
                   key={index}
-                  className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 pb-4 md:pb-6 ${
-                    index !== features.length - 1
-                      ? "border-b border-gray-300"
-                      : ""
-                  }`}
+                  className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 pb-4 md:pb-6 ${index !== features.length - 1
+                    ? "border-b border-gray-300"
+                    : ""
+                    }`}
                 >
                   <div>
                     <h3 className="text-xl md:text-2xl lg:text-[48px] font-regular text-black dark:text-white">
