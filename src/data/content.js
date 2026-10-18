@@ -8,6 +8,15 @@ import glenroyImage from "@/app/assets/glenroy.webp";
 import gyraImage from "@/app/assets/thinkgyra.png";
 import stem4girlsImage from "@/app/assets/stem4girls.png";
 
+// The main call to action, repeated across the site
+export const cta = {
+  label: "Get a quote in 24 hours",
+  href: "#contact",
+};
+
+// Countries where we have people on the ground
+export const locations = ["Australia", "India"];
+
 export const contact = {
   email: "pacostudios.work@gmail.com",
   phones: [
@@ -15,77 +24,133 @@ export const contact = {
     { display: "+91 7012399476", tel: "+917012399476", country: "IN" },
   ],
   whatsapp: "https://wa.me/61470541254",
+  whatsappOptions: [
+    { label: "Australia", number: "61470541254", display: "+61 470541254" },
+    { label: "India", number: "917012399476", display: "+91 7012399476" },
+  ],
+  whatsappMessage: "Hi Paco Studios, I'd like to talk about a project.",
   instagram: "https://www.instagram.com/org_paco?igsh=bTVhcXNjYmdlcTAz",
   linkedin: "https://www.linkedin.com/company/pacostudios/",
 };
 
-export const features = [
+// About statement: words wrapped in *asterisks* are highlighted in orange
+export const about = {
+  statement:
+    "At Paco Studios we blend *creativity* with *technology* to build websites and digital experiences that make businesses *stand* *out.* We're not just coders. We're creators with *purpose.*",
+  mission:
+    "To deliver scalable, modern and meaningful digital products that drive results and delight users.",
+};
+
+// How we work. TODO: real data (add typical timeframes once agreed)
+export const processSteps = [
   {
-    title: "Innovation-Led Approach",
-    description: "We Don't Just Build — We Innovate. Always.",
+    title: "Discovery call",
+    description: "A quick chat about your business, your goals and what success looks like.",
   },
   {
-    title: "Stakeholder-Focused",
-    description:
-      "We Treat Your Vision Like It's Ours. Every Pixel, Every Line Of Code.",
+    title: "Proposal & quote",
+    description: "A clear scope, timeline and price, sent within 24 hours.",
   },
   {
-    title: "Multi-Disciplinary Team",
-    description:
-      "Designers, Developers, Thinkers, And Problem Solvers Under One Roof",
+    title: "Design",
+    description: "Wireframes and visual designs you can click through and comment on before we build.",
+  },
+  {
+    title: "Build",
+    description: "We develop, test on every device and keep you updated as it comes together.",
+  },
+  {
+    title: "Launch & support",
+    description: "We handle the launch, then stay on hand for updates, fixes and growth.",
   },
 ];
 
+export const features = [
+  {
+    title: "Innovation-led",
+    description:
+      "We don't just build. We look for the smartest way to solve your problem, every time.",
+  },
+  {
+    title: "Your vision first",
+    description:
+      "We treat your project like it's ours, down to every pixel and every line of code.",
+  },
+  {
+    title: "One multi-skilled team",
+    description:
+      "Designers, developers and problem solvers under one roof, so nothing gets lost in hand-offs.",
+  },
+  {
+    title: "Australia and India",
+    description:
+      "People on the ground in both countries, so there's always someone to talk to.",
+  },
+];
+
+// What we offer. `id` is also used by the contact form ("Get a quote for
+// this" pre-selects the service). Projects link back to services by id.
 export const services = [
   {
-    id: 1,
-    number: "1",
-    title: "UX/UI",
-    subtitle: "Design",
-    description:
-      "We craft scalable, future-ready interfaces that blend aesthetics with functionality. Every design decision is rooted in user behavior, ensuring experiences that are visually engaging, intuitive, and outcome-driven.",
-    image:
-      "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=1200&fit=crop&crop=center",
+    id: "web",
+    title: "Web Development",
+    summary:
+      "Fast, responsive websites that are easy to update and built to grow with your business.",
+    deliverables: [
+      "Business websites",
+      "Content management (CMS)",
+      "Online payments, incl. Razorpay & UPI",
+      "SEO foundations",
+      "Hosting & domains",
+      "Ongoing maintenance",
+    ],
   },
   {
-    id: 2,
-    number: "2",
-    title: "Web",
-    subtitle: "Development",
-    description:
-      "We deliver robust, responsive, and future-ready web solutions aligned with your business goals. Our process prioritizes scalability, security, and performance, ensuring growth-ready platforms with seamless experiences across all devices",
-    image:
-      "https://images.unsplash.com/photo-1565106430482-8f6e74349ca1?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    id: "uxui",
+    title: "UX/UI Design",
+    summary:
+      "Clear, good-looking interfaces designed around how your customers actually use them.",
+    deliverables: [
+      "User flows & sitemaps",
+      "Wireframes",
+      "Interactive prototypes",
+      "Visual design",
+      "Design systems",
+      "Accessibility (WCAG AA) review",
+    ],
   },
   {
-    id: 3,
-    number: "3",
-    title: "3D",
-    subtitle: "Development",
-    description:
-      "We craft immersive 3D experiences that transform digital interactions. By merging cutting-edge technology with storytelling, we elevate engagement, strengthen brand perception, and deliver memorable user experiences beyond traditional interfaces.",
-    image:
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=1200&fit=crop&crop=center",
+    id: "3d",
+    title: "3D Development",
+    summary:
+      "Interactive 3D that lets customers explore products and spaces right in the browser.",
+    deliverables: [
+      "3D product viewers",
+      "Interactive web scenes",
+      "Animated 3D brand assets",
+    ],
   },
   {
-    id: 4,
-    number: "4",
-    title: "App",
-    subtitle: "Development",
-    description:
-      "We build intuitive, high-performing mobile applications that deliver seamless cross-platform experiences. By combining user-centric design, robust architecture, and the latest technologies, we craft apps that are visually engaging and efficient.",
-    image:
-      "https://images.unsplash.com/photo-1633250391894-397930e3f5f2?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    id: "app",
+    title: "App Development",
+    summary:
+      "Mobile apps for iOS and Android, designed and built by the same team as your website.",
+    deliverables: [
+      "iOS & Android apps",
+      "Cross-platform builds",
+      "App Store & Play Store launch",
+    ],
   },
   {
-    id: 5,
-    number: "5",
-    title: "ChatBot",
-    subtitle: "Service",
-    description:
-      "We build AI-powered chatbots that deliver personalized, human-like interactions to enhance support and engagement. With a focus on scalability and seamless integration, our solutions adapt to your business needs effortlessly.",
-    image:
-      "https://images.unsplash.com/photo-1659018966820-de07c94e0d01?q=80&w=1198&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    id: "chatbot",
+    title: "AI Chatbots",
+    summary:
+      "Assistants that answer customer questions around the clock and hand over to your team when needed.",
+    deliverables: [
+      "Website chat assistants",
+      "FAQ & support automation",
+      "WhatsApp chatbots",
+    ],
   },
 ];
 
@@ -97,38 +162,58 @@ export const projects = [
   {
     slug: "gyra",
     name: "GYRA",
+    industry: "Education nonprofit",
+    country: "USA", // TODO: confirm (site says 501(c)(3), a US nonprofit status)
+    services: ["web", "uxui"],
     description:
       "Nonprofit research academy helping students in grades 1–12 think like scientists.",
+    highlights: ["Programs", "Mentor network", "Online registration"],
     url: "https://www.thinkgyra.org/",
     image: gyraImage,
   },
   {
     slug: "stem4girls",
     name: "STEM4Girls",
+    industry: "Education nonprofit",
+    country: "USA", // TODO: confirm (site says 501(c)(3), a US nonprofit status)
+    services: ["web", "uxui"],
     description:
       "Nonprofit bringing STEM opportunities to underrepresented youth.",
+    highlights: ["Competitions", "Project resources", "Registration & donations"],
     url: "https://www.stem4girls.org/",
     image: stem4girlsImage,
   },
   {
     slug: "lorrygo",
     name: "LorryGo",
+    industry: "Logistics",
+    country: "UAE",
+    services: ["web", "uxui"],
     description: "Freight trucking across the UAE and GCC, based in Dubai.",
+    highlights: ["Service catalogue", "Fleet overview", "Shipment enquiry form"],
     url: "https://www.lorrygopvt.com/",
     image: lorrygoImage,
   },
   {
     slug: "poornaya",
     name: "Poornaya",
+    industry: "Disability & health",
+    country: "Australia",
+    services: ["web", "uxui"],
     description:
       "NDIS-registered positive behaviour support, based in Melbourne.",
+    highlights: ["Service pages", "Referral form", "Consultation booking"],
     url: "https://www.poornaya.com/",
     image: poornayaImage,
   },
   {
     slug: "glenroy-sports",
     name: "Glenroy Sports",
+    industry: "Retail",
+    country: "Australia",
+    services: ["web", "uxui"],
     description: "Sports gear, trophies, engraving and uniforms.",
+    highlights: ["Product categories", "Online shop", "Store contact"],
     url: "https://www.glenroysports.com.au/",
     image: glenroyImage,
   },

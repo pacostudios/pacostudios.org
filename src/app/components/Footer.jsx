@@ -48,9 +48,9 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-l-0 border-gray-300 grid">
+        <div className="border-l-0 border-gray-300 grid min-w-0">
           <div className="border border-gray-300 border-b-0 grid place-items-center min-h-[80px]">
-            <div className="py-4">
+            <div className="py-4 px-4 max-w-full">
               <div className="space-y-2">
                 <div className="flex items-center">
                   <div className="w-2 h-2 bg-black dark:bg-white rounded-full mr-3"></div>
@@ -58,7 +58,10 @@ export default function Footer() {
                 </div>
                 <div className="flex items-center space-x-4 mt-8">
                   <Mail />
-                  <a href={`mailto:${contact.email}`} className={contactLinkClass}>
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="text-sm lg:text-base xl:text-lg [overflow-wrap:anywhere] hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                  >
                     {contact.email}
                   </a>
                 </div>
@@ -113,7 +116,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-gray-300 px-6 py-3 flex justify-between items-center">
+      <div className="border-t border-gray-300 px-6 pt-3 pb-24 md:pb-3 flex flex-col sm:flex-row gap-2 justify-between sm:items-center">
         <Link
           href="/privacy"
           className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer"

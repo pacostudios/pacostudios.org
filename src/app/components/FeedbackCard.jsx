@@ -2,33 +2,48 @@
 
 import React from "react";
 
-export const FeedbackCard = ({
-  name,
-  title,
-  company,
-  testimonial,
-  isActive = false,
-}) => {
+// Large quote card. The active card turns orange.
+export const FeedbackCard = ({ name, title, company, testimonial, isActive = false }) => {
   return (
-    <div
-      className={`flex-none w-full h-[50vh] md:w-[45vw] md:h-[60vh] lg:w-[25vw] lg:h-[65vh] mr-4 transition-transform duration-300`}
+    <figure
+      className={`group flex-none w-[85vw] md:w-[55vw] lg:w-[36vw] mr-5 md:mr-6 flex flex-col justify-between gap-8 rounded-md border-2 p-7 md:p-10 min-h-[22rem] md:min-h-[26rem] transition-colors duration-300 shadow-[6px_6px_0px_#000000] dark:shadow-[6px_6px_0px_#FFFFFF] select-none ${
+        isActive
+          ? "bg-[#EB6E00] text-black border-black"
+          : "bg-white text-black border-black dark:bg-black dark:text-white dark:border-white"
+      }`}
     >
-      <div
-        className={`${
-          isActive ? "bg-[#ff6900] text-black" : "bg-black text-white"
-        } min-h-80 p-12 flex flex-col gap-3 justify-between `}
-      >
-        <div className="text-sm text-center lg:text-base">
-          <span className="font-semibold">{name}</span>
-          <span className="mx-1">•</span>
-          <span>{title}</span>
-          <div className="text-sm text-gray-300 mt-1">{company}</div>
-        </div>
-
-        <p className="text-xs lg:text-base font-[Public_Sans] leading-relaxed overflow-hidden text-center">
-          &quot;{testimonial}&quot;
-        </p>
+      <div>
+        <span
+          aria-hidden="true"
+          className={`block text-[7rem] md:text-[9rem] leading-[0.7] font-bold transition-[color,transform] duration-300 group-hover:-rotate-6 ${
+            isActive ? "text-black" : "text-[#EB6E00]"
+          }`}
+        >
+          &ldquo;
+        </span>
+        <blockquote className="mt-2 text-lg md:text-2xl font-medium leading-snug tracking-tight text-pretty">
+          {testimonial}
+        </blockquote>
       </div>
-    </div>
+
+      <figcaption className="flex items-center gap-4">
+        <span
+          aria-hidden="true"
+          className={`grid place-items-center size-12 md:size-14 shrink-0 rounded-full text-lg md:text-xl font-bold border-2 ${
+            isActive
+              ? "bg-black text-[#EB6E00] border-black"
+              : "bg-[#EB6E00] text-black border-black dark:border-white"
+          }`}
+        >
+          {name?.charAt(0)}
+        </span>
+        <span>
+          <span className="block font-semibold text-base md:text-lg">{name}</span>
+          <span className="block text-sm md:text-base font-[Public_Sans] opacity-80">
+            {[title, company].filter(Boolean).join(", ")}
+          </span>
+        </span>
+      </figcaption>
+    </figure>
   );
 };
