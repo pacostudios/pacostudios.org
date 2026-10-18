@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Navbar } from "./components/Navbar";
 import Hero from "./components/Hero";
 import { StackingCard } from "./components/StackingCard";
-import ServiceCards from "./components/ServiceCards";
+import ServicesIndex from "./components/ServicesIndex";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import CurvedLoop from "./components/CurvedLoop";
 import ProjectButton from "./components/ProjectButton";
@@ -90,7 +90,7 @@ export default function Home() {
           </div>
         </section>
 
-        <ServiceCards services={services} />
+        <ServicesIndex services={services} projects={projects} />
 
         <section
           id="work"
@@ -177,7 +177,9 @@ export default function Home() {
                 Reach out today for a strategic consultation and a quote
                 tailored specifically to your project needs.
               </p>
-              <ContactForm />
+              <ContactForm
+                services={services.map(({ id, title }) => ({ id, title }))}
+              />
             </div>
           </div>
         </section>

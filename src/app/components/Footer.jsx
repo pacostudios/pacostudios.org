@@ -60,7 +60,7 @@ export default function Footer() {
                   <Mail />
                   <a
                     href={`mailto:${contact.email}`}
-                    className="text-sm lg:text-lg xl:text-xl break-all hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                    className="text-sm lg:text-base xl:text-lg [overflow-wrap:anywhere] hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
                   >
                     {contact.email}
                   </a>

@@ -56,6 +56,9 @@ export async function POST(request) {
     const name = typeof body.name === 'string' ? body.name.trim() : '';
     const email = typeof body.email === 'string' ? body.email.trim() : '';
     const phone = typeof body.phone === 'string' ? body.phone.replace(/[\s-]/g, '') : '';
+    const services = Array.isArray(body.services)
+      ? body.services.filter((s) => typeof s === 'string' && s.length <= 50).slice(0, 10)
+      : [];
 
     if (!email || !phone) {
       return NextResponse.json({ error: 'Phone number and email are required' }, { status: 400 });
@@ -87,7 +90,8 @@ export async function POST(request) {
 
 Name: ${name || 'Not provided'}
 Email: ${email}
-Phone: ${phone}`,
+Phone: ${phone}
+Services: ${services.join(', ') || 'Not specified'}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #EB6E00; border-bottom: 2px solid #EB6E00; padding-bottom: 10px;">New Contact Form Submission</h2>
@@ -95,6 +99,7 @@ Phone: ${phone}`,
             <p><strong>Name:</strong> ${escapeHtml(name || 'Not provided')}</p>
             <p><strong>Email:</strong> ${escapeHtml(email)}</p>
             <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
+            <p><strong>Services:</strong> ${escapeHtml(services.join(', ') || 'Not specified')}</p>
           </div>
           <p style="color: #666; font-size: 12px;">This message was sent from the PACO Studios contact form.</p>
         </div>

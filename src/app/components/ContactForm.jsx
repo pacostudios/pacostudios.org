@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { QUOTE_SERVICE_EVENT } from "@/lib/quote";
 
 // Popular country codes, with our two markets first
 const countryCodes = [
@@ -30,7 +31,7 @@ const getServerCountryCode = () => "+61";
 const inputClass =
   "w-full px-4 py-3 text-black bg-[#FFE9D1] placeholder-gray-500 border-none outline-none text-sm";
 
-export default function ContactForm() {
+export default function ContactForm({ services = [] }) {
   const [phone, setPhone] = useState("");
   const defaultCountryCode = useSyncExternalStore(
     subscribeNoop,
@@ -42,8 +43,25 @@ export default function ContactForm() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [honeypot, setHoneypot] = useState("");
+  const [selectedServices, setSelectedServices] = useState([]);
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [submissionError, setSubmissionError] = useState("");
+
+  // "Get a quote for …" buttons elsewhere on the page pre-select a service
+  useEffect(() => {
+    const handleQuote = (e) => {
+      const id = e.detail?.service;
+      if (!id) return;
+      setSelectedServices((current) => (current.includes(id) ? current : [...current, id]));
+    };
+    window.addEventListener(QUOTE_SERVICE_EVENT, handleQuote);
+    return () => window.removeEventListener(QUOTE_SERVICE_EVENT, handleQuote);
+  }, []);
+
+  const toggleService = (id) =>
+    setSelectedServices((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
+    );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +78,9 @@ export default function ContactForm() {
           phone: `${countryCode}${phone}`,
           email,
           name,
+          services: services
+            .filter((service) => selectedServices.includes(service.id))
+            .map((service) => service.title),
           website: honeypot,
         }),
       });
@@ -70,6 +91,7 @@ export default function ContactForm() {
         setCountryCode(null);
         setEmail("");
         setName("");
+        setSelectedServices([]);
       } else {
         const data = await res.json().catch(() => ({}));
         setSubmissionError(data.error || "");
@@ -139,6 +161,29 @@ export default function ContactForm() {
             maxLength={15}
           />
         </div>
+        {services.length > 0 && (
+          <fieldset>
+            <legend className="text-sm text-white mb-2">What do you need? (optional)</legend>
+            <div className="flex flex-wrap gap-2">
+              {services.map((service) => {
+                const selected = selectedServices.includes(service.id);
+                return (
+                  <button
+                    key={service.id}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => toggleService(service.id)}
+                    className={`px-3 py-1.5 text-sm border-2 border-black transition-colors duration-150 cursor-pointer ${
+                      selected ? "bg-black text-white" : "bg-transparent text-black hover:bg-black/10"
+                    }`}
+                  >
+                    {service.title}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
         <button
           type="submit"
           disabled={submissionStatus === "sending"}
