@@ -7,6 +7,12 @@ export default function sitemap() {
       priority: 1,
     },
     {
+      url: 'https://pacostudios.org/work',
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
       url: 'https://pacostudios.org/privacy',
       lastModified: new Date(),
       changeFrequency: 'yearly',

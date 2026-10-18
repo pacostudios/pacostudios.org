@@ -5,6 +5,8 @@
 import lorrygoImage from "@/app/assets/project2.webp";
 import poornayaImage from "@/app/assets/poornaya_img.webp";
 import glenroyImage from "@/app/assets/glenroy.webp";
+import gyraImage from "@/app/assets/thinkgyra.png";
+import stem4girlsImage from "@/app/assets/stem4girls.png";
 
 export const contact = {
   email: "pacostudios.work@gmail.com",
@@ -87,28 +89,52 @@ export const services = [
   },
 ];
 
+// Order matters: the first three are featured on the home page, and the
+// /work page lists them all in this order.
 // Arabian Sky (arabianskyme.com) is left out for now; its screenshot is
 // still at src/app/assets/project1.webp.
 export const projects = [
   {
+    slug: "gyra",
+    name: "GYRA",
+    description:
+      "Nonprofit research academy helping students in grades 1–12 think like scientists.",
+    url: "https://www.thinkgyra.org/",
+    image: gyraImage,
+  },
+  {
+    slug: "stem4girls",
+    name: "STEM4Girls",
+    description:
+      "Nonprofit bringing STEM opportunities to underrepresented youth.",
+    url: "https://www.stem4girls.org/",
+    image: stem4girlsImage,
+  },
+  {
     slug: "lorrygo",
     name: "LorryGo",
+    description: "Freight trucking across the UAE and GCC, based in Dubai.",
     url: "https://www.lorrygopvt.com/",
     image: lorrygoImage,
   },
   {
     slug: "poornaya",
     name: "Poornaya",
+    description:
+      "NDIS-registered positive behaviour support, based in Melbourne.",
     url: "https://www.poornaya.com/",
     image: poornayaImage,
   },
   {
     slug: "glenroy-sports",
     name: "Glenroy Sports",
+    description: "Sports gear, trophies, engraving and uniforms.",
     url: "https://www.glenroysports.com.au/",
     image: glenroyImage,
   },
 ];
+
+export const FEATURED_PROJECT_COUNT = 3;
 
 export const testimonials = [
   {

@@ -2,15 +2,15 @@ import { ArrowRight } from "lucide-react";
 import React from "react";
 import ScrollLink from "./ScrollLink";
 
-// In-page anchors ("#contact") scroll smoothly; external hrefs open in a new tab.
+// In-page anchors ("#contact") scroll smoothly; external URLs open in a new tab.
 function ProjectButton({ title, className, href = "#contact", onClick }) {
-  const isAnchor = href.startsWith("#");
+  const isExternal = /^https?:\/\//.test(href);
 
   return (
     <ScrollLink
       href={href}
       onClick={onClick}
-      {...(!isAnchor && { target: "_blank", rel: "noopener noreferrer" })}
+      {...(isExternal && { target: "_blank", rel: "noopener noreferrer" })}
       className={`group relative block cursor-pointer p-2 w-75 border overflow-hidden text-black text-center ${
         className || "bg-white"
       } `}

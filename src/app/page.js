@@ -11,7 +11,13 @@ import Testimonials from "./components/Testimonials";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
 import homeimage1 from "@/app/assets/homeimage1.jpg";
-import { features, projects, services, testimonials } from "@/data/content";
+import {
+  FEATURED_PROJECT_COUNT,
+  features,
+  projects,
+  services,
+  testimonials,
+} from "@/data/content";
 
 export default function Home() {
   return (
@@ -96,7 +102,10 @@ export default function Home() {
             </h2>
           </div>
 
-          <StackingCard projects={projects} />
+          <StackingCard
+            projects={projects.slice(0, FEATURED_PROJECT_COUNT)}
+            moreHref="/work"
+          />
         </section>
 
         <TechMarquee />
