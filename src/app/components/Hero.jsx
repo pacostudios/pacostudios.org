@@ -1,25 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { motion } from "framer-motion";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import Preloader2 from "./Preloader2";
 import ProjectButton from "./ProjectButton";
 import ScrollLink from "./ScrollLink";
-
-const MAX_TILT_DEG = 18;
-const springConfig = { stiffness: 150, damping: 15, mass: 0.4 };
+import { useCursorTilt } from "@/lib/useCursorTilt";
 
 export default function Hero({ cta, locations }) {
   const [loading, setLoading] = useState(true);
   const [popFinished, setPopFinished] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const tilt = useCursorTilt();
 
   const finishLoading = useCallback(() => setLoading(false), []);
 
@@ -29,30 +21,6 @@ export default function Hero({ cta, locations }) {
     const timer = setTimeout(() => setPopFinished(true), 1400);
     return () => clearTimeout(timer);
   }, [loading]);
-
-  // Pointer position across the hero, from -0.5 to 0.5 on each axis
-  const pointerX = useMotionValue(0);
-  const pointerY = useMotionValue(0);
-  const rotateY = useSpring(
-    useTransform(pointerX, [-0.5, 0.5], [-MAX_TILT_DEG, MAX_TILT_DEG]),
-    springConfig
-  );
-  const rotateX = useSpring(
-    useTransform(pointerY, [-0.5, 0.5], [MAX_TILT_DEG, -MAX_TILT_DEG]),
-    springConfig
-  );
-
-  const handlePointerMove = (e) => {
-    if (reduceMotion || e.pointerType !== "mouse") return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    pointerX.set((e.clientX - rect.left) / rect.width - 0.5);
-    pointerY.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-
-  const resetTilt = () => {
-    pointerX.set(0);
-    pointerY.set(0);
-  };
 
   const letterClass = loading
     ? "opacity-0"
@@ -64,8 +32,7 @@ export default function Hero({ cta, locations }) {
       <section
         id="home"
         className="relative px-4 lg:px-16 pb-10 md:pb-16"
-        onPointerMove={handlePointerMove}
-        onPointerLeave={resetTilt}
+        {...tilt.handlers}
       >
         <div className="relative">
           <div className="flex text-[23vw] md:text-[20vw] justify-center items-center font-semibold leading-none pt-10 md:pt-18">
@@ -74,7 +41,7 @@ export default function Hero({ cta, locations }) {
             </p>
             {/* The tilt lives on a wrapper so it doesn't fight the CSS pop/wiggle animations */}
             <motion.div
-              style={{ rotateX, rotateY, transformPerspective: 900 }}
+              style={tilt.style}
               className="mx-1 md:mx-2"
             >
               <div

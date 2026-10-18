@@ -43,6 +43,9 @@ export const Navbar = () => {
         behavior: 'smooth',
         block: 'start',
       });
+    } else {
+      // Not on the home page: go there and jump to the section
+      window.location.assign(`/#${sectionId}`);
     }
     // Close mobile menu after clicking
     setIsOpen(false);
