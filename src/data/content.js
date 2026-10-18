@@ -24,6 +24,11 @@ export const contact = {
     { display: "+91 7012399476", tel: "+917012399476", country: "IN" },
   ],
   whatsapp: "https://wa.me/61470541254",
+  whatsappOptions: [
+    { label: "Australia", number: "61470541254", display: "+61 470541254" },
+    { label: "India", number: "917012399476", display: "+91 7012399476" },
+  ],
+  whatsappMessage: "Hi Paco Studios, I'd like to talk about a project.",
   instagram: "https://www.instagram.com/org_paco?igsh=bTVhcXNjYmdlcTAz",
   linkedin: "https://www.linkedin.com/company/pacostudios/",
 };
