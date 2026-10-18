@@ -5,8 +5,8 @@ import { TextAnimate } from "@/components/magicui/text-animate";
 // nudges the title and brings in an arrow.
 export default function WhyChooseUs({ features }) {
   return (
-    <section className="px-4 lg:px-16 py-[5rem] lg:py-[8rem]">
-      <div className="bg-[#EB6E00] w-fit px-6 py-3 font-bold text-3xl lg:text-[42px] text-black mb-10 md:mb-14">
+    <section id="why" data-snap className="px-4 lg:px-16 py-[5rem] lg:py-[8rem]">
+      <div className="bg-[#EB6E00] w-fit px-5 py-2.5 md:px-6 md:py-3 font-bold text-2xl sm:text-3xl lg:text-[42px] text-black whitespace-nowrap mb-10 md:mb-14">
         <TextAnimate animation="slideLeft" by="character">
           • WHY PACO?
         </TextAnimate>

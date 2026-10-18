@@ -31,6 +31,7 @@ export default function Hero({ cta, locations }) {
       {loading && <Preloader2 onComplete={finishLoading} />}
       <section
         id="home"
+        data-snap
         className="relative px-4 lg:px-16 pb-10 md:pb-16"
         {...tilt.handlers}
       >

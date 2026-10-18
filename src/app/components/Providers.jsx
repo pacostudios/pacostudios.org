@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { ReactLenis } from "lenis/react";
 import { MotionConfig } from "framer-motion";
+import SectionSnap from "./SectionSnap";
 
 // Smooth scrolling and animation settings for the whole app. Both back off
 // when the visitor's system asks for reduced motion.
@@ -24,6 +25,7 @@ export default function Providers({ children }) {
   return (
     <MotionConfig reducedMotion="user">
       <ReactLenis root options={lenisOptions}>
+        <SectionSnap />
         {children}
       </ReactLenis>
     </MotionConfig>

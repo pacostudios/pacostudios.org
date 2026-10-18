@@ -25,7 +25,7 @@ export default function WhatsAppButton({ options, message }) {
   }, [open]);
 
   return (
-    <div ref={wrapperRef} className="fixed bottom-5 right-5 md:bottom-8 md:right-8 z-50">
+    <div ref={wrapperRef} className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -64,9 +64,9 @@ export default function WhatsAppButton({ options, message }) {
         aria-expanded={open}
         aria-controls="whatsapp-menu"
         aria-label="Chat with us on WhatsApp"
-        className="grid place-items-center size-12 md:size-14 rounded-md bg-[#25D366] text-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#FFFFFF] cursor-pointer transition-[translate,box-shadow] duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#000000] dark:hover:shadow-[6px_6px_0px_#FFFFFF] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#000000] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#25D366]"
+        className="grid place-items-center size-11 md:size-14 rounded-md bg-[#25D366] text-white shadow-[4px_4px_0px_#000000] dark:shadow-[4px_4px_0px_#FFFFFF] cursor-pointer transition-[translate,box-shadow] duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_#000000] dark:hover:shadow-[6px_6px_0px_#FFFFFF] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#000000] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#25D366]"
       >
-        <FaWhatsapp className="size-7 md:size-8" />
+        <FaWhatsapp className="size-6 md:size-8" />
       </button>
     </div>
   );

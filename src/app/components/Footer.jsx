@@ -116,7 +116,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-gray-300 px-6 py-3 flex justify-between items-center">
+      <div className="border-t border-gray-300 px-6 pt-3 pb-24 md:pb-3 flex flex-col sm:flex-row gap-2 justify-between sm:items-center">
         <Link
           href="/privacy"
           className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer"

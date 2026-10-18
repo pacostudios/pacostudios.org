@@ -41,9 +41,9 @@ const MAX_TAGS = 4;
 // (Web Development) is larger and shows real project screenshots.
 export default function ServicesGrid({ services, projects }) {
   return (
-    <section id="services" className="px-4 lg:px-16 py-[5rem] lg:py-[8rem]">
+    <section id="services" data-snap className="px-4 lg:px-16 py-[5rem] lg:py-[8rem]">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10 md:mb-14">
-        <div className="bg-[#EB6E00] w-fit px-6 py-3 font-bold text-3xl lg:text-[42px] text-black">
+        <div className="bg-[#EB6E00] w-fit px-5 py-2.5 md:px-6 md:py-3 font-bold text-2xl sm:text-3xl lg:text-[42px] text-black whitespace-nowrap">
           <TextAnimate animation="slideLeft" by="character">
             • WHAT WE DO
           </TextAnimate>

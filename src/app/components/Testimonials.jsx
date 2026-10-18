@@ -73,10 +73,10 @@ export default function Testimonials({ testimonials }) {
   useEffect(() => () => clearTimeout(arrowScrollTimer.current), []);
 
   return (
-    <section className="px-4 lg:px-16 pb-[5rem] md:pb-[9rem]">
+    <section id="testimonials" data-snap className="px-4 lg:px-16 pt-[3rem] pb-[5rem] md:pb-[9rem]">
       <div className="flex flex-col md:flex-row gap-6 md:gap-0 justify-between md:items-end mb-10 md:mb-14">
         <div className="flex flex-col gap-4">
-          <div className="bg-[#EB6E00] w-fit px-6 py-3 font-bold text-3xl lg:text-[42px] text-black">
+          <div className="bg-[#EB6E00] w-fit px-5 py-2.5 md:px-6 md:py-3 font-bold text-2xl sm:text-3xl lg:text-[42px] text-black whitespace-nowrap">
             <TextAnimate animation="slideLeft" by="character">
               • CLIENT FEEDBACK
             </TextAnimate>

@@ -38,6 +38,7 @@ export default function Home() {
 
         <section
           id="work"
+          data-snap
           className="bg-orange-500 flex flex-col items-center justify-center p-8 relative overflow-x-clip"
         >
           <div className="pt-[5rem]">
@@ -71,7 +72,7 @@ export default function Home() {
 
         <Testimonials testimonials={testimonials} />
 
-        <section id="contact" className="bg-[#EB6E00] w-full px-4 lg:px-16 py-16 md:py-24">
+        <section id="contact" data-snap className="bg-[#EB6E00] w-full px-4 lg:px-16 py-16 md:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-center">
             <div className="flex flex-col gap-8">
               <ContactHeading />

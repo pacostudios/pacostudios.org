@@ -19,10 +19,11 @@ export default function AboutStatement({ statement, mission }) {
   return (
     <section
       id="about"
+      data-snap
       className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-10 lg:gap-16 py-[5rem] lg:py-[9rem] px-4 lg:px-16"
     >
       <div>
-        <div className="bg-[#EB6E00] w-fit px-6 py-3 font-bold text-3xl lg:text-[42px] text-black whitespace-nowrap lg:sticky lg:top-28">
+        <div className="bg-[#EB6E00] w-fit px-5 py-2.5 md:px-6 md:py-3 font-bold text-2xl sm:text-3xl lg:text-[42px] text-black whitespace-nowrap lg:sticky lg:top-28">
           <TextAnimate animation="slideLeft" by="character">
             • ABOUT PACO
           </TextAnimate>

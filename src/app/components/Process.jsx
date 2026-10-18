@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -11,22 +11,52 @@ import {
 import { TextAnimate } from "@/components/magicui/text-animate";
 import ProjectButton from "./ProjectButton";
 
-// "How we work": numbered steps with an orange line that draws itself as you
-// scroll, and step markers that fill in as the line reaches them.
+// "How we work": numbered steps joined by an orange line that draws itself as
+// you scroll. The line runs exactly from the first marker to the last one,
+// and each marker fills in the moment the line reaches it.
 export default function Process({ steps, cta }) {
   const listRef = useRef(null);
+  const lineRef = useRef(null);
   const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: listRef,
-    offset: ["start 0.7", "end 0.6"],
-  });
-  const lineScale = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 });
+  // Line geometry measured from the markers: top/height in px relative to the
+  // list, plus where each marker sits along the line (0 to 1)
+  const [line, setLine] = useState({ top: 0, height: 0, stops: [] });
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const measure = () => {
+      const markers = [...list.querySelectorAll("[data-step-marker]")];
+      if (markers.length < 2) return;
+      // Layout offsets, not screen positions, so the steps' slide-in
+      // animation doesn't skew the measurement (marker → li → list)
+      const centers = markers.map(
+        (marker) => marker.parentElement.offsetTop + marker.offsetTop + marker.offsetHeight / 2
+      );
+      const top = centers[0];
+      const height = centers[centers.length - 1] - top;
+      setLine({ top, height, stops: centers.map((c) => (height ? (c - top) / height : 0)) });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, []);
+
+  // 0 when the start of the line reaches 60% down the screen, 1 when the end
+  // (the last marker) does
+  const { scrollYProgress } = useScroll({ target: lineRef, offset: ["start 0.6", "end 0.6"] });
+  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.3 });
 
   return (
-    <section id="process" className="px-4 lg:px-16 py-[5rem] lg:py-[8rem] bg-[#FFE9D1] dark:bg-neutral-900">
+    <section
+      id="process"
+      data-snap
+      className="px-4 lg:px-16 py-[5rem] lg:py-[8rem] bg-[#FFE9D1] dark:bg-neutral-900"
+    >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-12 lg:gap-20">
         <div className="lg:sticky lg:top-28 self-start flex flex-col gap-6">
-          <div className="bg-[#EB6E00] w-fit px-6 py-3 font-bold text-3xl lg:text-[42px] text-black">
+          <div className="bg-[#EB6E00] w-fit px-5 py-2.5 md:px-6 md:py-3 font-bold text-2xl sm:text-3xl lg:text-[42px] text-black whitespace-nowrap">
             <TextAnimate animation="slideLeft" by="character">
               • HOW WE WORK
             </TextAnimate>
@@ -38,15 +68,17 @@ export default function Process({ steps, cta }) {
         </div>
 
         <ol ref={listRef} className="relative">
-          {/* Track and animated line */}
+          {/* Track (grey) and the line that fills it (orange) */}
           <span
+            ref={lineRef}
             aria-hidden="true"
-            className="absolute left-[1.4rem] md:left-[1.9rem] top-2 bottom-2 w-1 bg-black/10 dark:bg-white/15"
+            style={{ top: line.top, height: line.height }}
+            className="absolute left-[1.4rem] md:left-[1.9rem] w-1 bg-black/10 dark:bg-white/15"
           />
           <motion.span
             aria-hidden="true"
-            style={{ scaleY: reduceMotion ? 1 : lineScale }}
-            className="absolute left-[1.4rem] md:left-[1.9rem] top-2 bottom-2 w-1 bg-[#EB6E00] origin-top"
+            style={{ top: line.top, height: line.height, scaleY: reduceMotion ? 1 : progress }}
+            className="absolute left-[1.4rem] md:left-[1.9rem] w-1 bg-[#EB6E00] origin-top"
           />
 
           {steps.map((step, index) => (
@@ -54,8 +86,8 @@ export default function Process({ steps, cta }) {
               key={step.title}
               step={step}
               index={index}
-              total={steps.length}
-              progress={scrollYProgress}
+              progress={progress}
+              stop={line.stops[index] ?? 1}
               still={reduceMotion}
             />
           ))}
@@ -65,20 +97,16 @@ export default function Process({ steps, cta }) {
   );
 }
 
-function Step({ step, index, total, progress, still }) {
-  const ref = useRef(null);
-  const threshold = index / total;
-
+function Step({ step, index, progress, stop, still }) {
   return (
     <motion.li
-      ref={ref}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       className="group relative flex gap-6 md:gap-10 pb-12 md:pb-16 last:pb-0"
     >
-      <StepMarker number={index + 1} progress={progress} threshold={threshold} still={still} />
+      <StepMarker number={index + 1} progress={progress} stop={stop} still={still} />
       <div className="pt-1 md:pt-2">
         <h3 className="text-2xl md:text-4xl font-semibold tracking-tight text-black dark:text-white transition-colors duration-300 group-hover:text-[#EB6E00]">
           {step.title}
@@ -91,18 +119,19 @@ function Step({ step, index, total, progress, still }) {
   );
 }
 
-function StepMarker({ number, progress, threshold, still }) {
+function StepMarker({ number, progress, stop, still }) {
   const ref = useRef(null);
 
-  // Fill the marker once the line passes it; written to the DOM directly
-  // so scrolling doesn't re-render React.
+  // Fill the marker once the line reaches it; written to the DOM directly so
+  // scrolling doesn't re-render React.
   useMotionValueEvent(progress, "change", (value) => {
-    if (!still) ref.current?.toggleAttribute("data-reached", value >= threshold);
+    if (!still) ref.current?.toggleAttribute("data-reached", value >= stop - 0.001);
   });
 
   return (
     <span
       ref={ref}
+      data-step-marker
       data-reached={still ? "" : undefined}
       className="relative z-10 grid place-items-center shrink-0 size-12 md:size-16 rounded-full border-4 border-black dark:border-white bg-white dark:bg-black text-lg md:text-2xl font-semibold tabular-nums text-black dark:text-white transition-[background-color,color,transform] duration-300 data-[reached]:bg-[#EB6E00] data-[reached]:text-black data-[reached]:border-black group-hover:scale-110"
     >
