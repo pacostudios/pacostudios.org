@@ -8,6 +8,7 @@ import { TextAnimate } from "@/components/magicui/text-animate";
 import CurvedLoop from "./components/CurvedLoop";
 import ProjectButton from "./components/ProjectButton";
 import TechMarquee from "./components/TechMarquee";
+import WhyChooseUs from "./components/WhyChooseUs";
 import Testimonials from "./components/Testimonials";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
@@ -56,43 +57,7 @@ export default function Home() {
 
         <TechMarquee />
 
-        <div className="px-4 lg:px-16">
-          <div className="pb-[5rem] lg:pb-[10rem]">
-            <div className="mb-8 md:mb-12">
-              <div className="bg-orange-500 text-black px-4 py-2 md:px-6 md:py-3 inline-flex items-center">
-                <div className="w-3 h-3 bg-black rounded-full mr-2 md:mr-3"></div>
-                <span className="font-bold text-3xl md:text-3xl lg:text-[42px]">
-                  <TextAnimate animation="slideLeft" by="character">
-                    WHY CHOOSE US?
-                  </TextAnimate>
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-6 md:space-y-8">
-              {features.map((item, index) => (
-                <div
-                  key={index}
-                  className={`grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 pb-4 md:pb-6 ${index !== features.length - 1
-                    ? "border-b border-gray-300"
-                    : ""
-                    }`}
-                >
-                  <div>
-                    <h3 className="text-xl md:text-2xl lg:text-[48px] font-regular text-black dark:text-white">
-                      {item.title}
-                    </h3>
-                  </div>
-                  <div>
-                    <p className="text-lg md:text-xl lg:text-[32px] font-light text-black dark:text-white">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <WhyChooseUs features={features} />
 
         <CurvedLoop
           marqueeText="Where ▩ Creativity ▩ meets ▩ strategy ▩"

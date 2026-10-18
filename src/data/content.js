@@ -67,18 +67,24 @@ export const processSteps = [
 
 export const features = [
   {
-    title: "Innovation-Led Approach",
-    description: "We Don't Just Build — We Innovate. Always.",
+    title: "Innovation-led",
+    description:
+      "We don't just build. We look for the smartest way to solve your problem, every time.",
   },
   {
-    title: "Stakeholder-Focused",
+    title: "Your vision first",
     description:
-      "We Treat Your Vision Like It's Ours. Every Pixel, Every Line Of Code.",
+      "We treat your project like it's ours, down to every pixel and every line of code.",
   },
   {
-    title: "Multi-Disciplinary Team",
+    title: "One multi-skilled team",
     description:
-      "Designers, Developers, Thinkers, And Problem Solvers Under One Roof",
+      "Designers, developers and problem solvers under one roof, so nothing gets lost in hand-offs.",
+  },
+  {
+    title: "Australia and India",
+    description:
+      "People on the ground in both countries, so there's always someone to talk to.",
   },
 ];
 
