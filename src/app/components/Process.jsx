@@ -51,7 +51,6 @@ export default function Process({ steps, cta }) {
   return (
     <section
       id="process"
-      data-snap
       className="px-4 lg:px-16 py-[5rem] lg:py-[8rem] bg-[#FFE9D1] dark:bg-neutral-900"
     >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-12 lg:gap-20">

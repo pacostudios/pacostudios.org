@@ -26,7 +26,7 @@ const rows = [
 // pauses it, hovering a pill brings its logo into full colour.
 export default function TechMarquee() {
   return (
-    <section id="tech" data-snap className="w-full py-16 md:py-24">
+    <section id="tech" className="w-full py-16 md:py-24">
       <h2 className="text-center text-3xl md:text-5xl font-semibold tracking-tight text-black dark:text-white mb-10 md:mb-14 px-4">
         Technologies we build and grow on
       </h2>

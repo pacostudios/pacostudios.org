@@ -18,7 +18,7 @@ export default function WorkHero({ stats }) {
   const letterClass = popFinished ? "" : "animate-pop-letter opacity-0";
 
   return (
-    <section data-snap className="px-4 lg:px-16 pb-12 md:pb-20" {...tilt.handlers}>
+    <section className="px-4 lg:px-16 pb-12 md:pb-20" {...tilt.handlers}>
       <h1 className="sr-only">Our work</h1>
       <div
         aria-hidden="true"

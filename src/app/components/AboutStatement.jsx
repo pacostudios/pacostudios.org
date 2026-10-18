@@ -19,7 +19,6 @@ export default function AboutStatement({ statement, mission }) {
   return (
     <section
       id="about"
-      data-snap
       className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-10 lg:gap-16 py-[5rem] lg:py-[9rem] px-4 lg:px-16"
     >
       <div>
