@@ -14,11 +14,8 @@ export const cta = {
   href: "#contact",
 };
 
-export const locations = [
-  // locale is used to get the local zone abbreviation (AEST/AEDT, IST)
-  { city: "Australia", timeZone: "Australia/Melbourne", locale: "en-AU" },
-  { city: "India", timeZone: "Asia/Kolkata", locale: "en-IN" },
-];
+// Countries where we have people on the ground
+export const locations = ["Australia", "India"];
 
 export const contact = {
   email: "pacostudios.work@gmail.com",

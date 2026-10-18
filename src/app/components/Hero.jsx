@@ -12,7 +12,6 @@ import { TextAnimate } from "@/components/magicui/text-animate";
 import Preloader2 from "./Preloader2";
 import ProjectButton from "./ProjectButton";
 import ScrollLink from "./ScrollLink";
-import LiveClocks from "./LiveClocks";
 
 const MAX_TILT_DEG = 18;
 const springConfig = { stiffness: 150, damping: 15, mass: 0.4 };
@@ -130,9 +129,19 @@ export default function Hero({ cta, locations }) {
 
           <div className="xl:justify-self-end flex flex-col gap-3 xl:items-end">
             <p className="text-sm uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">
-              One team, two time zones
+              One team, two countries
             </p>
-            <LiveClocks locations={locations} className="text-black dark:text-white" />
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-black dark:text-white">
+              {locations.map((country) => (
+                <div key={country} className="flex items-center gap-2">
+                  <span className="relative flex size-2">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-[#EB6E00] opacity-60 motion-safe:animate-ping" />
+                    <span className="relative inline-flex size-2 rounded-full bg-[#EB6E00]" />
+                  </span>
+                  <span className="text-base md:text-lg font-medium">{country}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
