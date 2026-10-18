@@ -60,7 +60,7 @@ export default function TechMarquee() {
         />
 
         <div
-          className="flex items-center"
+          className="flex items-center marquee-track"
           style={{
             animation: "marquee 28s linear infinite",
             width: "max-content",
@@ -70,12 +70,10 @@ export default function TechMarquee() {
             <div key={index} className="flex items-center gap-3 mx-12 shrink-0">
               <Image
                 src={item.logo}
-                // className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 width={40}
                 height={40}
                 alt=""
                 loading="lazy"
-                quality={70}
               />
               <span className="text-gray-700 font-semibold text-2xl whitespace-nowrap">
                 {item.name}

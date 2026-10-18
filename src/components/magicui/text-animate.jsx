@@ -247,7 +247,9 @@ const TextAnimateBase = ({
   animation = "fadeIn",
   ...props
 }) => {
-  const MotionComponent = motion.create(Component);
+  // motion[tag] is a stable, cached component. motion.create() here would make
+  // a new component type every render and restart the animation.
+  const MotionComponent = motion[Component];
 
   let segments = [];
   switch (by) {

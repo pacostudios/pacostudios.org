@@ -200,3 +200,22 @@ body {
 .hover-wiggle:hover {
   animation: wiggle 0.5s ease-in-out infinite;
 }
+
+/* Respect the system "reduce motion" setting: show final states, stop loops */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pop-letter,
+  .animate-pop-badge {
+    animation: none;
+    opacity: 1;
+  }
+
+  .animate-pop-badge,
+  .hover-wiggle:hover {
+    animation: none;
+    transform: rotate(-3deg);
+  }
+
+  .marquee-track {
+    animation: none !important;
+  }
+}

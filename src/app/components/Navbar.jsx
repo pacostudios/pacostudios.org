@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import Logo from "../../app/assets/paco.png";
 import { Menu, X } from "lucide-react";
 import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
@@ -57,9 +58,12 @@ export const Navbar = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8  h-full">
             <div className="border-r px-6 h-full">
-              <img
+              <Image
                 className="w-10 h-10 md:w-14 md:h-14 rounded-full cursor-pointer"
-                src={Logo.src}
+                src={Logo}
+                width={56}
+                height={56}
+                priority
                 alt="Paco Studios logo"
                 onClick={() => scrollToSection('home')}
               />

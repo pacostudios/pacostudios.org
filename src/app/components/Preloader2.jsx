@@ -1,7 +1,18 @@
-import React, { useEffect, useState, useRef } from 'react';
+"use client";
+import React, { useEffect, useRef } from 'react';
 
-function Preloader2() {
-  const [show, setShow] = useState(true);
+const PRELOADER_DURATION_MS = 1000;
+const SEEN_KEY = 'paco-preloader-seen';
+
+function hasSeenPreloader() {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function Preloader2({ onComplete }) {
   const containerRef = useRef(null);
 
   // This effect ensures proper viewport sizing on iOS Safari devices.
@@ -20,14 +31,20 @@ function Preloader2() {
     return () => window.removeEventListener('resize', setVhUnit);
   }, []);
 
+  // The parent decides when to unmount; we just say when we're done.
+  // Finish right away on repeat visits in the same session, and with reduced
+  // motion (the preloader is hidden by CSS then).
   useEffect(() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const skip = reduceMotion || hasSeenPreloader();
     const timer = setTimeout(() => {
-      setShow(false);
-    }, 1500);
+      try {
+        sessionStorage.setItem(SEEN_KEY, '1');
+      } catch {}
+      onComplete?.();
+    }, skip ? 0 : PRELOADER_DURATION_MS);
     return () => clearTimeout(timer);
-  }, []);
-
-  if (!show) return null;
+  }, [onComplete]);
 
   return (
     <>
@@ -52,7 +69,7 @@ function Preloader2() {
             justify-content: center;
           }
 
-          /* Hide preloader for search engine crawlers */
+          /* Skip the preloader for people who prefer reduced motion */
           @media (prefers-reduced-motion: reduce) {
             .preloader2-center-container {
               display: none;

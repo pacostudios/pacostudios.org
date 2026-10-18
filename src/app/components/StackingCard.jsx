@@ -1,91 +1,47 @@
-"use client";
-import project1 from "@/app/assets/project1.webp";
-import project2 from "@/app/assets/project2.webp";
-import project3 from "@/app/assets/poornaya_img.webp";
-import project4 from "@/app/assets/glenroy.webp";
-
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
 
-export const StackingCard = () => {
-  const [hoveredCard, setHoveredCard] = useState(null);
+// Each card gets a slight tilt so the stack looks hand-placed
+const transforms = [
+  "-rotate-4 scale-95",
+  "rotate-4 scale-96 translate-x-4 translate-y-2",
+  "-rotate-4 scale-95",
+];
 
-  const projects = [
-    // {
-    //   id: 1,
-    //   image: project1,
-    //   title: "Project 1",
-    //   description: "Click to view Project 1",
-    //   link: "https://arabianskyme.com/",
-    //   transform: "rotate-4",
-    // },
-    {
-      id: 2,
-      image: project2,
-      title: "Project 2",
-      description: "Click to view Project 2",
-      link: "https://www.lorrygopvt.com/",
-      transform: "-rotate-4 scale-95",
-    },
-    {
-      id: 3,
-      image: project3,
-      title: "Project 3",
-      description: "Click to view Project 3",
-      link: "https://www.poornaya.com/",
-      transform: "rotate-4 scale-96 translate-x-4 translate-y-2",
-    },
-    {
-      id: 4,
-      image: project4,
-      title: "Project 4",
-      description: "Click to view Project 3",
-      link: "https://www.glenroysports.com.au/", // Replace with your actual links
-      transform: "-rotate-4 scale-95",
-    },
-  ];
-
-  const handleCardClick = (link) => {
-    window.open(link, "_blank");
-  };
-
+export const StackingCard = ({ projects }) => {
   return (
     <section className="text-white w-full">
       <div className="flex justify-center items-center">
-        <div className="">
+        <div>
           {projects.map((project, index) => (
             <figure
-              key={project.id}
+              key={project.slug}
               className="sticky top-0 h-screen grid place-content-center"
             >
-              <article
-                className={`w-[85vw] h-[50vh] md:h-[80vh] md:w-[70vw] lg:h-[80vh] lg:w-[70vw] bg-black transform ${project.transform} border-8 border-white overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl relative group`}
-                onMouseEnter={() => setHoveredCard(project.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-                onClick={() => handleCardClick(project.link)}
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit the ${project.name} website`}
+                className={`block w-[85vw] h-[50vh] md:h-[80vh] md:w-[70vw] lg:h-[80vh] lg:w-[70vw] bg-black transform ${
+                  transforms[index % transforms.length]
+                } border-8 border-white overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl relative group`}
               >
                 <Image
-                  src={project.image.src}
-                  className="w-full h-full object-fit transition-transform duration-300 group-hover:scale-110"
-                  width={1200}
-                  height={1200}
-                  alt={project.title}
-                  loading="lazy"
-                  quality={70}
+                  src={project.image}
+                  className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-110"
+                  sizes="(min-width: 768px) 70vw, 85vw"
+                  alt={`Screenshot of the ${project.name} website`}
+                  placeholder="blur"
                 />
 
                 {/* Hover overlay */}
-                <div
-                  className={`absolute left-10 bottom-10 bg-opacity-50 flex flex-col justify-center items-center transition-opacity duration-300 ${
-                    hoveredCard === project.id ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  <div className=" p-2 bg-orange-500   hover:bg-white hover:text-black transition-colors duration-200 rounded-full">
+                <div className="absolute left-10 bottom-10 flex flex-col justify-center items-center transition-opacity duration-300 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <div className="p-2 bg-orange-500 hover:bg-white hover:text-black transition-colors duration-200 rounded-full">
                     <ArrowUpRight strokeWidth={0.5} className="size-[6vw]" />
                   </div>
                 </div>
-              </article>
+              </a>
             </figure>
           ))}
         </div>

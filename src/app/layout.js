@@ -1,18 +1,8 @@
-import { Geist, Geist_Mono, Montserrat, Public_Sans } from "next/font/google";
-import { ReactLenis } from "lenis/react";
+import { Montserrat, Public_Sans } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import Providers from "./components/Providers";
 
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -138,7 +128,7 @@ export default function RootLayout({ children }) {
               <p>We build websites, brands, and 3D experiences for startups and businesses in Melbourne and beyond.</p>
             </div>
           </noscript>
-          <ReactLenis root>{children}</ReactLenis>
+          <Providers>{children}</Providers>
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{

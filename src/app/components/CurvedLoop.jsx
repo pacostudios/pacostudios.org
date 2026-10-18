@@ -1,3 +1,4 @@
+"use client";
 import {
     useRef,
     useEffect,
@@ -31,6 +32,7 @@ import {
     const pathD = `M-100,40 Q500,${40 + curveAmount} 1540,40`;
   
     const dragRef = useRef(false);
+    const [dragging, setDragging] = useState(false);
     const lastXRef = useRef(0);
     const dirRef = useRef(direction);
     const velRef = useRef(0);
@@ -53,8 +55,11 @@ import {
       }
     }, [spacing]);
   
+    // The animation writes startOffset straight to the DOM; it doesn't go
+    // through React state, which would re-render this component every frame.
     useEffect(() => {
       if (!spacing || !ready) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       let frame = 0;
       const step = () => {
         if (!dragRef.current && textPathRef.current) {
@@ -65,7 +70,6 @@ import {
           if (newOffset <= -wrapPoint) newOffset += wrapPoint;
           if (newOffset > 0) newOffset -= wrapPoint;
           textPathRef.current.setAttribute("startOffset", newOffset + "px");
-          setOffset(newOffset);
         }
         frame = requestAnimationFrame(step);
       };
@@ -76,6 +80,7 @@ import {
     const onPointerDown = (e) => {
       if (!interactive) return;
       dragRef.current = true;
+      setDragging(true);
       lastXRef.current = e.clientX;
       velRef.current = 0;
       (e.target).setPointerCapture(e.pointerId);
@@ -92,17 +97,17 @@ import {
       if (newOffset <= -wrapPoint) newOffset += wrapPoint;
       if (newOffset > 0) newOffset -= wrapPoint;
       textPathRef.current.setAttribute("startOffset", newOffset + "px");
-      setOffset(newOffset);
     };
   
     const endDrag = () => {
       if (!interactive) return;
       dragRef.current = false;
+      setDragging(false);
       dirRef.current = velRef.current > 0 ? "right" : "left";
     };
   
     const cursorStyle = interactive
-      ? dragRef.current
+      ? dragging
         ? "grabbing"
         : "grab"
       : "auto";
