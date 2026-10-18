@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Navbar } from "./components/Navbar";
 import Hero from "./components/Hero";
 import { StackingCard } from "./components/StackingCard";
-import ServicesIndex from "./components/ServicesIndex";
+import ServicesGrid from "./components/ServicesGrid";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import CurvedLoop from "./components/CurvedLoop";
 import ProjectButton from "./components/ProjectButton";
@@ -90,11 +90,11 @@ export default function Home() {
           </div>
         </section>
 
-        <ServicesIndex services={services} projects={projects} />
+        <ServicesGrid services={services} projects={projects} />
 
         <section
           id="work"
-          className=" bg-orange-500 flex flex-col items-center justify-center p-8 relative"
+          className="bg-orange-500 flex flex-col items-center justify-center p-8 relative overflow-x-clip"
         >
           <div className="pt-[5rem]">
             <h2 className="text-white text-[8vw] md:text-[5vw] font-semibold">

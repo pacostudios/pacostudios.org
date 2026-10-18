@@ -114,7 +114,7 @@ import {
   
     return (
       <div
-        className="pb-[10rem] lg:pb-[15rem] flex items-center justify-center w-full"
+        className="pb-[10rem] lg:pb-[15rem] flex items-center justify-center w-full overflow-x-clip"
         style={{ visibility: ready ? "visible" : "hidden", cursor: cursorStyle }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
