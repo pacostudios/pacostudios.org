@@ -106,8 +106,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ReactLenis root>
-      <html lang="en">
+    <html lang="en">
         <head>
           <link rel="icon" href="/favicon.ico" sizes="any" />
           <link
@@ -139,7 +138,7 @@ export default function RootLayout({ children }) {
               <p>We build websites, brands, and 3D experiences for startups and businesses in Melbourne and beyond.</p>
             </div>
           </noscript>
-          {children}
+          <ReactLenis root>{children}</ReactLenis>
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
@@ -152,6 +151,7 @@ export default function RootLayout({ children }) {
                 contactPoint: {
                   "@type": "ContactPoint",
                   telephone: "+61470541254",
+                  email: "pacostudios.work@gmail.com",
                   contactType: "customer service",
                   areaServed: "AU",
                   availableLanguage: "en",
@@ -172,8 +172,9 @@ export default function RootLayout({ children }) {
             }}
           />
         </body>
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-XXXXXXXXXX"} />
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+        )}
       </html>
-    </ReactLenis>
   );
 }

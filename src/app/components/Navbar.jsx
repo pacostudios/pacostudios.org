@@ -60,7 +60,7 @@ export const Navbar = () => {
               <img
                 className="w-10 h-10 md:w-14 md:h-14 rounded-full cursor-pointer"
                 src={Logo.src}
-                alt="Logo"
+                alt="Paco Studios logo"
                 onClick={() => scrollToSection('home')}
               />
             </div>
@@ -107,6 +107,8 @@ export const Navbar = () => {
             </div>
             <button
               onClick={() => setIsOpen(!isOpen)}
+              aria-label={isOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isOpen}
               className="text-black dark:text-white"
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -116,7 +118,7 @@ export const Navbar = () => {
         </div>
 
         {isOpen && (
-          <div className="flex flex-col mt-4 space-y-4 md:hidden">
+          <div className="flex flex-col mt-4 pb-4 space-y-4 lg:hidden">
             <button
               onClick={() => scrollToSection('about')}
               className="text-black dark:text-white text-base font-semibold font-[Montserrat] hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 text-left"

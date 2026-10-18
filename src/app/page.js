@@ -2,6 +2,7 @@
 
 import { Navbar } from "./components/Navbar";
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import {
   ChevronLeft,
   ChevronRight,
@@ -26,19 +27,22 @@ import TechMarquee from "./components/TechMarquee";
 
 export default function Home() {
   const [phone, setPhone] = useState("");
-  const [countryCode, setCountryCode] = useState("+1");
+  const [defaultCountryCode, setDefaultCountryCode] = useState("+61");
+  const [countryCode, setCountryCode] = useState("+61");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
   const [popFinished, setPopFinished] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [submissionError, setSubmissionError] = useState("");
+  const [honeypot, setHoneypot] = useState("");
 
   // Popular country codes
   const countryCodes = [
-    { code: "+1", country: "US/CA", flag: "🇺🇸" },
-    { code: "+44", country: "UK", flag: "🇬🇧" },
     { code: "+61", country: "AU", flag: "🇦🇺" },
     { code: "+91", country: "IN", flag: "🇮🇳" },
+    { code: "+1", country: "US/CA", flag: "🇺🇸" },
+    { code: "+44", country: "UK", flag: "🇬🇧" },
     { code: "+49", country: "DE", flag: "🇩🇪" },
     { code: "+33", country: "FR", flag: "🇫🇷" },
     { code: "+81", country: "JP", flag: "🇯🇵" },
@@ -59,9 +63,19 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Visitors in India get +91 by default, everyone else +61
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (timeZone === "Asia/Kolkata" || timeZone === "Asia/Calcutta") {
+      setDefaultCountryCode("+91");
+      setCountryCode("+91");
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmissionStatus("sending");
+    setSubmissionError("");
 
     try {
       const res = await fetch("/api/send-email", {
@@ -73,20 +87,21 @@ export default function Home() {
           phone: `${countryCode}${phone}`,
           email,
           name,
+          website: honeypot,
         }),
       });
 
       if (res.ok) {
         setSubmissionStatus("success");
         setPhone("");
-        setCountryCode("+1");
+        setCountryCode(defaultCountryCode);
         setEmail("");
         setName("");
       } else {
+        const data = await res.json().catch(() => ({}));
+        setSubmissionError(data.error || "");
         setSubmissionStatus("error");
       }
-
-      console.log(res);
     } catch (error) {
       console.error(error);
       setSubmissionStatus("error");
@@ -172,25 +187,49 @@ export default function Home() {
     // },
   ];
 
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: -320,
-        behavior: "smooth",
-      });
-      setCurrentIndex(Math.max(0, currentIndex - 1));
-    }
+  // While an arrow-triggered scroll is animating, ignore scroll events so the
+  // intermediate positions don't overwrite the index the arrow picked.
+  const arrowScrolling = useRef(false);
+  const arrowScrollTimer = useRef(null);
+
+  const goToTestimonial = (index) => {
+    const container = scrollContainerRef.current;
+    const card = container?.children[index];
+    if (!card) return;
+    setCurrentIndex(index);
+    arrowScrolling.current = true;
+    clearTimeout(arrowScrollTimer.current);
+    arrowScrollTimer.current = setTimeout(() => {
+      arrowScrolling.current = false;
+    }, 600);
+    container.scrollTo({ left: card.offsetLeft, behavior: "smooth" });
   };
 
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: 320,
-        behavior: "smooth",
-      });
-      setCurrentIndex(Math.min(testimonials.length - 1, currentIndex + 1));
+  const handleTestimonialScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container || arrowScrolling.current) return;
+    const { scrollLeft, scrollWidth, clientWidth, children } = container;
+    if (scrollLeft + clientWidth >= scrollWidth - 2) {
+      setCurrentIndex(children.length - 1);
+      return;
     }
+    let nearest = 0;
+    for (let i = 1; i < children.length; i++) {
+      if (
+        Math.abs(children[i].offsetLeft - scrollLeft) <
+        Math.abs(children[nearest].offsetLeft - scrollLeft)
+      ) {
+        nearest = i;
+      }
+    }
+    setCurrentIndex(nearest);
   };
+
+  useEffect(() => () => clearTimeout(arrowScrollTimer.current), []);
+
+  const scrollLeft = () => goToTestimonial(Math.max(0, currentIndex - 1));
+  const scrollRight = () =>
+    goToTestimonial(Math.min(testimonials.length - 1, currentIndex + 1));
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -481,7 +520,8 @@ export default function Home() {
               <div className="flex gap-2">
                 <button
                   onClick={scrollLeft}
-                  className="bg-orange-500 hover:bg-orange-600 text-white p-3 transition-colors duration-200"
+                  aria-label="Previous testimonial"
+                  className="bg-orange-500 hover:bg-orange-600 text-white p-3 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-orange-500"
                   disabled={currentIndex === 0}
                 >
                   <svg
@@ -499,7 +539,8 @@ export default function Home() {
                 </button>
                 <button
                   onClick={scrollRight}
-                  className="bg-orange-500 hover:bg-orange-600 text-white p-3 transition-colors duration-200"
+                  aria-label="Next testimonial"
+                  className="bg-orange-500 hover:bg-orange-600 text-white p-3 transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-orange-500"
                   disabled={currentIndex === testimonials.length - 1}
                 >
                   <svg
@@ -520,7 +561,8 @@ export default function Home() {
 
             <div
               ref={scrollContainerRef}
-              className="flex overflow-x-auto scrollbar-hide scroll-smooth"
+              onScroll={handleTestimonialScroll}
+              className="relative flex overflow-x-auto scrollbar-hide scroll-smooth"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {testimonials.map((testimonial, index) => (
@@ -545,7 +587,7 @@ export default function Home() {
                 <br />
                 vision into reality.
               </h2>
-              <ProjectButton title={"Start Your Project"} />
+              <ProjectButton title={"Start Your Project"} href="#contact-form" />
             </div>
 
             <div className="flex flex-col justify-end md:justify-center px-6 md:pl-12 md:pr-16 border-t md:border-t-0 md:border-l border-white border-opacity-30 py-8">
@@ -555,6 +597,7 @@ export default function Home() {
               </p>
 
               <form
+                id="contact-form"
                 onSubmit={handleSubmit}
                 className="w-full max-w-md space-y-4"
               >
@@ -565,6 +608,7 @@ export default function Home() {
                   onChange={(e) => setName(e.target.value)}
                   className="w-full px-4 py-3 text-black bg-[#FFE9D1] placeholder-gray-500 border-none outline-none text-sm"
                   required
+                  maxLength={100}
                 />
                 <input
                   type="email"
@@ -573,6 +617,18 @@ export default function Home() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full px-4 py-3 text-black bg-[#FFE9D1] placeholder-gray-500 border-none outline-none text-sm"
                   required
+                  maxLength={254}
+                />
+                {/* Honeypot: hidden from people, bots fill it in */}
+                <input
+                  type="text"
+                  name="website"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  className="hidden"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
                 />
                 <div className="flex gap-2">
                   <select
@@ -599,6 +655,7 @@ export default function Home() {
                     }
                     className="flex-1 px-4 py-3 text-black bg-[#FFE9D1] placeholder-gray-500 border-none outline-none text-sm"
                     required
+                    maxLength={15}
                   />
                 </div>
                 <button
@@ -615,8 +672,8 @@ export default function Home() {
                 </p>
               )}
               {submissionStatus === "error" && (
-                <p className="text-red-400 mt-2">
-                  Something went wrong. Please try again.
+                <p className="text-black font-medium mt-2">
+                  {submissionError || "Something went wrong. Please try again."}
                 </p>
               )}
             </div>
@@ -673,35 +730,42 @@ export default function Home() {
                     <div className="flex items-center space-x-4 mt-8">
                       <Mail />
                       <a
-                        href="mailto:info@pacostudio.com"
+                        href="mailto:pacostudios.work@gmail.com"
                         className="text-sm lg:text-2xl hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
                       >
-                        info@pacostudios.org
+                        pacostudios.work@gmail.com
                       </a>
                     </div>
                     <hr />
 
                     <div className="flex items-center space-x-4">
                       <Phone />
-                      <p className="text-sm lg:text-2xl hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 mt-2">
+                      <a
+                        href="tel:+61470541254"
+                        className="text-sm lg:text-2xl hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 mt-2"
+                      >
                         +61 470541254
-                      </p>
+                      </a>
                     </div>
                     <hr />
                     <div className="flex items-center space-x-4">
                       {/* <Phone /> */}
 
-                      <p className="text-sm lg:text-2xl hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 pl-10">
+                      <a
+                        href="tel:+917012399476"
+                        className="text-sm lg:text-2xl hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 pl-10"
+                      >
                         +91 7012399476
-                      </p>
+                      </a>
                     </div>
                     <hr />
 
                     <div className="flex items-center space-x-6 mt-8">
                       <a
-                        href="https://wa.me/+61470541254"
+                        href="https://wa.me/61470541254"
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label="WhatsApp"
                         className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer"
                       >
                         <FaWhatsapp size={28} />
@@ -711,6 +775,7 @@ export default function Home() {
                         href="https://www.instagram.com/org_paco?igsh=bTVhcXNjYmdlcTAz"
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label="Instagram"
                         className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer"
                       >
                         <Instagram />
@@ -720,6 +785,7 @@ export default function Home() {
                         href="https://www.linkedin.com/company/pacostudios/"
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label="LinkedIn"
                         className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer"
                       >
                         <Linkedin />
@@ -761,15 +827,15 @@ export default function Home() {
 
           <div className="border-t border-gray-300 px-6 py-3 flex justify-between items-center">
             <div>
-              <button
-                onClick={() => scrollToSection("privacy")}
+              <Link
+                href="/privacy"
                 className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer"
               >
                 Privacy Policy
-              </button>
+              </Link>
             </div>
             <div>
-              <span className="text-sm">2025 Made In Paco Studio</span>
+              <span className="text-sm">© {new Date().getFullYear()} Paco Studios</span>
             </div>
           </div>
         </div>
