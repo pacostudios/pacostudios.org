@@ -1,6 +1,7 @@
 import { Montserrat, Public_Sans } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Providers from "./components/Providers";
+import BackToTop from "./components/BackToTop";
 
 import "./globals.css";
 
@@ -128,7 +129,10 @@ export default function RootLayout({ children }) {
               <p>We build websites, brands, and 3D experiences for startups and businesses in Melbourne and beyond.</p>
             </div>
           </noscript>
-          <Providers>{children}</Providers>
+          <Providers>
+            {children}
+            <BackToTop />
+          </Providers>
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
