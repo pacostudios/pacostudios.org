@@ -8,6 +8,17 @@ import glenroyImage from "@/app/assets/glenroy.webp";
 import gyraImage from "@/app/assets/thinkgyra.png";
 import stem4girlsImage from "@/app/assets/stem4girls.png";
 
+// The main call to action, repeated across the site
+export const cta = {
+  label: "Get a quote in 24 hours",
+  href: "#contact",
+};
+
+export const locations = [
+  { city: "Melbourne", timeZone: "Australia/Melbourne", label: "AEST" },
+  { city: "Kerala", timeZone: "Asia/Kolkata", label: "IST" },
+];
+
 export const contact = {
   email: "pacostudios.work@gmail.com",
   phones: [

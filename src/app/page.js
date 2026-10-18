@@ -13,6 +13,8 @@ import Footer from "./components/Footer";
 import homeimage1 from "@/app/assets/homeimage1.jpg";
 import {
   FEATURED_PROJECT_COUNT,
+  cta,
+  locations,
   features,
   projects,
   services,
@@ -24,7 +26,7 @@ export default function Home() {
     <>
       <Navbar />
       <main className="relative">
-        <Hero />
+        <Hero cta={cta} locations={locations} />
 
         <div className="grid grid-cols-1 lg:grid-cols-[2.5fr_1.5fr] gap-4 lg:gap-0 mt-20 lg:mt-40  mb-10 px-4 lg:px-16">
           <div className="inline-flex flex-col justify-start items-start gap-4 sm:gap-6">

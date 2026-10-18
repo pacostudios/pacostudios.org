@@ -11,7 +11,7 @@ function ProjectButton({ title, className, href = "#contact", onClick }) {
       href={href}
       onClick={onClick}
       {...(isExternal && { target: "_blank", rel: "noopener noreferrer" })}
-      className={`group relative block cursor-pointer p-2 w-75 border overflow-hidden text-black text-center ${
+      className={`group relative block cursor-pointer py-2 px-12 w-fit min-w-75 border overflow-hidden text-black text-center ${
         className || "bg-white"
       } `}
     >
