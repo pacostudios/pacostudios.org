@@ -15,8 +15,8 @@ export const cta = {
 };
 
 export const locations = [
-  { city: "Melbourne", timeZone: "Australia/Melbourne", label: "AEST" },
-  { city: "Kerala", timeZone: "Asia/Kolkata", label: "IST" },
+  { city: "Australia", timeZone: "Australia/Melbourne", label: "AEST" },
+  { city: "India", timeZone: "Asia/Kolkata", label: "IST" },
 ];
 
 export const contact = {
