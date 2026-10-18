@@ -6,15 +6,16 @@ import { StackingCard } from "./components/StackingCard";
 import ServicesGrid from "./components/ServicesGrid";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import CurvedLoop from "./components/CurvedLoop";
-import ProjectButton from "./components/ProjectButton";
 import TechMarquee from "./components/TechMarquee";
 import WhyChooseUs from "./components/WhyChooseUs";
 import Testimonials from "./components/Testimonials";
 import ContactForm from "./components/ContactForm";
+import ContactHeading from "./components/ContactHeading";
 import Footer from "./components/Footer";
 import {
   FEATURED_PROJECT_COUNT,
   about,
+  contact,
   cta,
   processSteps,
   locations,
@@ -70,22 +71,38 @@ export default function Home() {
 
         <Testimonials testimonials={testimonials} />
 
-        <section id="contact" className="bg-orange-500 w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 min-h-96">
-            <div className="flex flex-col items-center justify-center gap-8 px-6 md:pl-16 md:pr-8 py-8">
-              <h2 className="text-white text-[30px]  md:text-[40px] lg:text-[65px] font-normal leading-tight">
-                Transforming your
-                <br />
-                vision into reality.
-              </h2>
-              <ProjectButton title={"Start Your Project"} href="#contact-form" />
+        <section id="contact" className="bg-[#EB6E00] w-full px-4 lg:px-16 py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-center">
+            <div className="flex flex-col gap-8">
+              <ContactHeading />
+              <p className="text-black text-lg md:text-2xl font-[Public_Sans] max-w-xl text-pretty">
+                Tell us a little about your project and we&apos;ll come back with
+                a tailored quote within 24 hours.
+              </p>
+              <ul className="flex flex-col gap-3 text-black text-base md:text-lg">
+                <li>
+                  <a
+                    href={`mailto:${contact.email}`}
+                    className="font-semibold underline underline-offset-4 decoration-2 hover:text-white transition-colors duration-200 [overflow-wrap:anywhere]"
+                  >
+                    {contact.email}
+                  </a>
+                </li>
+                {contact.phones.map((phone) => (
+                  <li key={phone.tel}>
+                    <a
+                      href={`tel:${phone.tel}`}
+                      className="font-semibold hover:text-white transition-colors duration-200"
+                    >
+                      {phone.display}
+                    </a>
+                    <span className="ml-2 text-sm opacity-70">{phone.country}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <div className="flex flex-col justify-end md:justify-center px-6 md:pl-12 md:pr-16 border-t md:border-t-0 md:border-l border-white border-opacity-30 py-8">
-              <p className="text-white text-[20px] sm:text-[22px] md:text-[24px] lg:text-[28px] mb-6 font-[Public_Sans]">
-                Reach out today for a strategic consultation and a quote
-                tailored specifically to your project needs.
-              </p>
+            <div className="flex lg:justify-end">
               <ContactForm
                 services={services.map(({ id, title }) => ({ id, title }))}
               />
