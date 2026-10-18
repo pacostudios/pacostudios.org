@@ -28,6 +28,38 @@ export const contact = {
   linkedin: "https://www.linkedin.com/company/pacostudios/",
 };
 
+// About statement: words wrapped in *asterisks* are highlighted in orange
+export const about = {
+  statement:
+    "At Paco Studios we blend *creativity* with *technology* to build websites and digital experiences that make businesses *stand* *out.* We're not just coders. We're creators with *purpose.*",
+  mission:
+    "To deliver scalable, modern and meaningful digital products that drive results and delight users.",
+};
+
+// How we work. TODO: real data (add typical timeframes once agreed)
+export const processSteps = [
+  {
+    title: "Discovery call",
+    description: "A quick chat about your business, your goals and what success looks like.",
+  },
+  {
+    title: "Proposal & quote",
+    description: "A clear scope, timeline and price, sent within 24 hours.",
+  },
+  {
+    title: "Design",
+    description: "Wireframes and visual designs you can click through and comment on before we build.",
+  },
+  {
+    title: "Build",
+    description: "We develop, test on every device and keep you updated as it comes together.",
+  },
+  {
+    title: "Launch & support",
+    description: "We handle the launch, then stay on hand for updates, fixes and growth.",
+  },
+];
+
 export const features = [
   {
     title: "Innovation-Led Approach",

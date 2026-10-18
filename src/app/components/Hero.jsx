@@ -78,11 +78,11 @@ export default function Hero({ cta, locations }) {
           style={{ transitionDelay: loading ? "0ms" : "900ms" }}
         >
           <div className="flex flex-col gap-6">
-            <p className="text-xl md:text-3xl lg:text-[40px] font-medium leading-tight tracking-tight text-black dark:text-white text-balance max-w-3xl">
+            <h1 className="text-xl md:text-3xl lg:text-[40px] font-medium leading-tight tracking-tight text-black dark:text-white text-balance max-w-3xl">
               Websites, brands and 3D experiences for businesses in{" "}
               <span className="text-[#EB6E00]">Australia</span> and{" "}
               <span className="text-[#EB6E00]">India</span>.
-            </p>
+            </h1>
             <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
               <ProjectButton title={cta.label} href={cta.href} className="bg-[#EB6E00]" />
               <ScrollLink
