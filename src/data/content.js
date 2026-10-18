@@ -15,8 +15,9 @@ export const cta = {
 };
 
 export const locations = [
-  { city: "Australia", timeZone: "Australia/Melbourne", label: "AEST" },
-  { city: "India", timeZone: "Asia/Kolkata", label: "IST" },
+  // locale is used to get the local zone abbreviation (AEST/AEDT, IST)
+  { city: "Australia", timeZone: "Australia/Melbourne", locale: "en-AU" },
+  { city: "India", timeZone: "Asia/Kolkata", locale: "en-IN" },
 ];
 
 export const contact = {
