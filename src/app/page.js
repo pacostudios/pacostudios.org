@@ -2,7 +2,7 @@ import { Navbar } from "./components/Navbar";
 import Hero from "./components/Hero";
 import AboutStatement from "./components/AboutStatement";
 import Process from "./components/Process";
-import { StackingCard } from "./components/StackingCard";
+import FeaturedProjects from "./components/FeaturedProjects";
 import ServicesGrid from "./components/ServicesGrid";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import CurvedLoop from "./components/CurvedLoop";
@@ -36,23 +36,11 @@ export default function Home() {
 
         <ServicesGrid services={services} projects={projects} />
 
-        <section
-          id="work"
-          className="bg-orange-500 flex flex-col items-center justify-center p-8 relative overflow-x-clip"
-        >
-          <div className="pt-[5rem]">
-            <h2 className="text-white text-[8vw] md:text-[5vw] font-semibold">
-              <TextAnimate animation="slideLeft" by="character">
-                FEATURED WORKS
-              </TextAnimate>
-            </h2>
-          </div>
-
-          <StackingCard
-            projects={projects.slice(0, FEATURED_PROJECT_COUNT)}
-            moreHref="/work"
-          />
-        </section>
+        <FeaturedProjects
+          projects={projects.slice(0, FEATURED_PROJECT_COUNT)}
+          moreProjects={projects.slice(FEATURED_PROJECT_COUNT)}
+          moreHref="/work"
+        />
 
         <Process steps={processSteps} cta={cta} />
 

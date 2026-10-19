@@ -213,6 +213,7 @@ export const projects = [
     country: "Australia",
     services: ["web", "uxui"],
     description: "Sports gear, trophies, engraving and uniforms.",
+    livePreview: false, // the site doesn't render when embedded, so cards show the screenshot
     highlights: ["Product categories", "Online shop", "Store contact"],
     url: "https://www.glenroysports.com.au/",
     image: glenroyImage,
