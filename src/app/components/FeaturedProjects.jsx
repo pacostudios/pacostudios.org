@@ -1,65 +1,111 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-} from "framer-motion";
-import { useLenis } from "lenis/react";
+import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Eye, MapPin } from "lucide-react";
 import ProjectPreview, { hostname } from "./ProjectPreview";
 
-// Pinned, scroll-driven carousel only on wide screens with motion allowed;
-// everywhere else the cards sit in a swipeable row
-const PINNED_QUERY = "(min-width: 768px) and (prefers-reduced-motion: no-preference)";
-// Extra scroll distance per card while the section is pinned
-const SCROLL_PER_CARD_VH = 80;
+// Side-by-side panels from this width up; stacked panels below it
+const WIDE_QUERY = "(min-width: 768px)";
+// Flex weight of the open panel against 1 for each closed one
+const OPEN_GROW = 8;
+// Panels alternate orange and white; the section background takes the
+// opposite colour so the open panel always stands out
+const THEMES = [
+  { panel: "bg-[#EB6E00] text-white", section: "#FFE9D1", heading: "text-black" },
+  { panel: "bg-white text-black", section: "#EB6E00", heading: "text-white" },
+];
+const EASE = [0.65, 0, 0.35, 1];
 
 const subscribeToQuery = (callback) => {
-  const query = window.matchMedia(PINNED_QUERY);
+  const query = window.matchMedia(WIDE_QUERY);
   query.addEventListener("change", callback);
   return () => query.removeEventListener("change", callback);
 };
 
-// Eases each step between cards so the carousel lingers on every card
-// without snapping the page's scroll
-const linger = (t) => t * t * (3 - 2 * t);
-
+// Home page projects as an expanding accordion: hovering (or tapping) a
+// panel opens it to show the site, and its name swings from vertical to
+// horizontal. Clicking an open panel loads the live site in a preview window.
 export default function FeaturedProjects({ projects, moreProjects = [], moreHref }) {
+  const [active, setActive] = useState(0);
   const [selected, setSelected] = useState(null);
-  const pinned = useSyncExternalStore(
+  const wide = useSyncExternalStore(
     subscribeToQuery,
-    () => window.matchMedia(PINNED_QUERY).matches,
-    () => false
+    () => window.matchMedia(WIDE_QUERY).matches,
+    () => true
   );
   const closePreview = useCallback(() => setSelected(null), []);
 
-  const slideCount = projects.length + (moreHref ? 1 : 0);
+  const panels = [
+    ...projects.map((project) => ({ type: "project", key: project.slug, project })),
+    ...(moreHref ? [{ type: "more", key: "more" }] : []),
+  ];
+  const theme = THEMES[active % THEMES.length];
 
   return (
-    <>
-      {pinned ? (
-        <PinnedCarousel
-          projects={projects}
-          moreProjects={moreProjects}
-          moreHref={moreHref}
-          slideCount={slideCount}
-          onOpen={setSelected}
-        />
-      ) : (
-        <SwipeRow
-          projects={projects}
-          moreProjects={moreProjects}
-          moreHref={moreHref}
-          onOpen={setSelected}
-        />
-      )}
+    <section
+      id="work"
+      className="px-4 lg:px-16 py-[5rem] lg:py-[7rem] transition-colors duration-700 ease-in-out"
+      style={{ backgroundColor: theme.section }}
+    >
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6 mb-8 md:mb-12">
+        <div>
+          <h2
+            className={`text-[12vw] md:text-[7vw] lg:text-[5vw] font-semibold leading-[0.9] tracking-tight transition-colors duration-700 ${theme.heading}`}
+          >
+            FEATURED WORK
+          </h2>
+          <p className="mt-3 text-black text-lg md:text-xl font-[Public_Sans] text-pretty">
+            {wide
+              ? "Hover a project to open it. Click to see the live site."
+              : "Tap a project to open it, then tap again to see the live site."}
+          </p>
+        </div>
+        {moreHref && (
+          <Link
+            href={moreHref}
+            className="group inline-flex w-fit shrink-0 items-center gap-2 text-black text-lg md:text-xl font-semibold underline underline-offset-8 decoration-2 hover:opacity-70 transition-opacity duration-200"
+          >
+            See more projects
+            <ArrowRight className="size-5 transition-transform duration-200 group-hover:translate-x-1" />
+          </Link>
+        )}
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:h-[min(70vh,640px)] md:min-h-[480px]">
+        {panels.map((panel, index) => (
+          <Panel
+            key={panel.key}
+            index={index}
+            open={active === index}
+            wide={wide}
+            themeClass={THEMES[index % THEMES.length].panel}
+            onActivate={() => setActive(index)}
+          >
+            {panel.type === "project" ? (
+              <ProjectContent
+                project={panel.project}
+                index={index}
+                open={active === index}
+                wide={wide}
+                onOpen={() => setSelected(panel.project)}
+              />
+            ) : (
+              <MoreContent
+                href={moreHref}
+                projects={moreProjects}
+                open={active === index}
+                wide={wide}
+              />
+            )}
+          </Panel>
+        ))}
+      </div>
+
       <PreviewPortal project={selected} onClose={closePreview} />
-    </>
+    </section>
   );
 }
 
@@ -73,285 +119,164 @@ function PreviewPortal(props) {
   return mounted ? <ProjectPreview {...props} /> : null;
 }
 
-function Heading({ moreHref, hint }) {
+// One accordion panel. Wide screens share the row by flex weight; narrow
+// screens stack the panels and the open one grows taller.
+function Panel({ index, open, wide, themeClass, onActivate, children }) {
   return (
-    <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
-      <div>
-        <h2 className="text-white text-[12vw] md:text-[7vw] lg:text-[5vw] font-semibold leading-[0.9] tracking-tight">
-          FEATURED WORK
-        </h2>
-        <p className="mt-3 text-black text-lg md:text-xl font-[Public_Sans] text-pretty">{hint}</p>
-      </div>
-      {moreHref && (
-        <Link
-          href={moreHref}
-          className="group inline-flex w-fit shrink-0 items-center gap-2 text-black text-lg md:text-xl font-semibold underline underline-offset-8 decoration-2 hover:text-white transition-colors duration-200"
-        >
-          See more projects
-          <ArrowRight className="size-5 transition-transform duration-200 group-hover:translate-x-1" />
-        </Link>
+    <div
+      onPointerEnter={(e) => e.pointerType === "mouse" && onActivate()}
+      onFocusCapture={onActivate}
+      className={`group relative overflow-hidden rounded-md border-4 border-black ${themeClass} transition-[flex-grow,height,box-shadow] duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none ${
+        open ? "shadow-[10px_10px_0px_#000000]" : "shadow-[6px_6px_0px_#000000]"
+      } ${wide ? "min-w-0 basis-0" : open ? "h-[calc(56vw+220px)]" : "h-20 shrink-0"}`}
+      style={wide ? { flexGrow: open ? OPEN_GROW : 1 } : undefined}
+    >
+      {/* Closed panels are one big button that opens them */}
+      {!open && (
+        <button
+          type="button"
+          onClick={onActivate}
+          aria-label={`Show project ${index + 1}`}
+          className="absolute inset-0 z-20 cursor-pointer"
+        />
       )}
+      {children}
     </div>
   );
 }
 
-function PinnedCarousel({ projects, moreProjects, moreHref, slideCount, onOpen }) {
-  const sectionRef = useRef(null);
-  const trackRef = useRef(null);
-  const lenis = useLenis();
-  const [step, setStep] = useState(0);
-  const [active, setActive] = useState(0);
-  const lastIndex = slideCount - 1;
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-
-  // Carousel position in cards: 0 is the first card centred
-  const position = useTransform(scrollYProgress, (p) => {
-    const raw = Math.min(Math.max(p, 0), 1) * lastIndex;
-    const index = Math.min(Math.floor(raw), lastIndex - 1);
-    return index + linger(raw - index);
-  });
-  const x = useTransform(position, (p) => -p * step);
-  const progressWidth = useTransform(position, (p) => `${(p / lastIndex) * 100}%`);
-
-  useMotionValueEvent(position, "change", (p) => setActive(Math.round(p)));
-
-  // Distance between card centres, kept in sync with the layout
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    const measure = () => {
-      const [first, second] = track.children;
-      if (first && second) setStep(second.offsetLeft - first.offsetLeft);
-    };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(track);
-    return () => observer.disconnect();
-  }, []);
-
-  const goTo = (index) => {
-    const section = sectionRef.current;
-    if (!section) return;
-    const top = section.getBoundingClientRect().top + window.scrollY;
-    const distance = section.offsetHeight - window.innerHeight;
-    const y = top + (index / lastIndex) * distance;
-    if (lenis) lenis.scrollTo(y, { duration: 1 });
-    else window.scrollTo({ top: y, behavior: "smooth" });
-  };
-
-  const labels = [...projects.map((p) => p.name), ...(moreHref ? ["More"] : [])];
-
+// Name that sits vertically in a closed panel and swings round to
+// horizontal as the panel opens
+function SwingTitle({ open, wide, children, className = "" }) {
   return (
-    <section
-      id="work"
-      ref={sectionRef}
-      className="relative bg-[#EB6E00]"
-      style={{ height: `${100 + lastIndex * SCROLL_PER_CARD_VH}vh` }}
-    >
-      <div
-        className="sticky top-0 flex h-svh flex-col overflow-hidden pt-24 pb-6"
-        style={{ "--card-w": "max(340px, min(56vw, calc((100svh - 440px) * 1.6)))" }}
-      >
-        <div className="px-4 lg:px-16">
-          <Heading
-            moreHref={moreHref}
-            hint="Scroll to browse. Click a project to open the live site."
-          />
-        </div>
-
-        <div className="flex flex-1 items-center">
-          <motion.div
-            ref={trackRef}
-            style={{ x, paddingLeft: "calc(50vw - var(--card-w) / 2)" }}
-            className="flex items-center gap-[5vw] will-change-transform"
-          >
-            {projects.map((project, index) => (
-              <Slide key={project.slug} index={index} position={position}>
-                <ProjectCard
-                  project={project}
-                  active={active === index}
-                  onOpen={() => (active === index ? onOpen(project) : goTo(index))}
-                />
-              </Slide>
-            ))}
-            {moreHref && (
-              <Slide index={projects.length} position={position}>
-                <MoreCard href={moreHref} projects={moreProjects} />
-              </Slide>
-            )}
-          </motion.div>
-        </div>
-
-        {/* Progress: click a name to jump to it */}
-        <div className="px-4 lg:px-16">
-          <div className="relative h-1 bg-black/20">
-            <motion.div className="absolute inset-y-0 left-0 bg-black" style={{ width: progressWidth }} />
-          </div>
-          <div className="mt-3 flex justify-between gap-4 pr-16 lg:pr-20">
-            {labels.map((label, index) => (
-              <button
-                key={label}
-                type="button"
-                onClick={() => goTo(index)}
-                aria-current={active === index ? "true" : undefined}
-                className={`flex items-baseline gap-2 text-sm md:text-base font-semibold cursor-pointer transition-colors duration-200 ${
-                  active === index ? "text-black" : "text-black/50 hover:text-white"
-                }`}
-              >
-                <span className="font-[Public_Sans] tabular-nums">{String(index + 1).padStart(2, "0")}</span>
-                <span className="hidden lg:inline uppercase tracking-wider">{label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// One carousel slot: grows and straightens as it reaches the centre, shrinks
-// and tilts away on either side
-function Slide({ index, position, children }) {
-  const distance = useTransform(position, (p) => Math.max(-1, Math.min(1, index - p)));
-  const scale = useTransform(distance, (d) => 1 - Math.abs(d) * 0.18);
-  const rotate = useTransform(distance, (d) => d * 7);
-  const y = useTransform(distance, (d) => Math.abs(d) * 40);
-
-  return (
-    <motion.div
-      style={{ scale, rotate, y, width: "var(--card-w)" }}
-      className="shrink-0 will-change-transform"
+    <motion.span
+      layout="position"
+      initial={false}
+      animate={{ rotate: open || !wide ? 0 : -90, scale: open ? 1 : wide ? 0.42 : 0.5 }}
+      transition={{ duration: 0.7, ease: EASE, layout: { duration: 0.7, ease: EASE } }}
+      className={`block whitespace-nowrap font-semibold leading-none tracking-tight ${
+        open || wide ? "origin-center" : "origin-left"
+      } ${className}`}
     >
       {children}
-    </motion.div>
+    </motion.span>
   );
 }
 
-function SwipeRow({ projects, moreProjects, moreHref, onOpen }) {
+function ProjectContent({ project, index, open, wide, onOpen }) {
+  const number = String(index + 1).padStart(2, "0");
+
   return (
-    <section id="work" className="bg-[#EB6E00] py-[5rem]">
-      <div className="px-4">
-        <Heading moreHref={moreHref} hint="Swipe to browse. Tap a project to open the live site." />
+    <>
+      {/* Screenshot, shown once the panel is open */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-500 ${
+          open ? "opacity-100 delay-200" : "pointer-events-none opacity-0"
+        }`}
+        aria-hidden={!open}
+      >
+        <div className="flex h-full flex-col">
+          <div className="flex items-center border-b-4 border-black bg-[#FFE9D1] py-2 pl-14 pr-3 md:pl-16 md:pr-4 text-black">
+            <span className="flex-1 truncate rounded-full border-2 border-black bg-white px-3 py-0.5 text-xs md:text-sm font-[Public_Sans]">
+              {hostname(project.url)}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={onOpen}
+            tabIndex={open ? 0 : -1}
+            aria-label={`Open a live preview of ${project.name}`}
+            className="group/shot relative flex-1 cursor-pointer overflow-hidden bg-black"
+          >
+            <Image
+              src={project.image}
+              fill
+              sizes="(min-width: 768px) 70vw, 100vw"
+              alt={`Screenshot of the ${project.name} website`}
+              placeholder="blur"
+              className="object-cover object-top transition-transform duration-[2000ms] ease-out group-hover/shot:scale-[1.04]"
+            />
+            {/* Keeps the name readable over any screenshot */}
+            <span className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+            <span className="absolute right-4 top-4 md:right-6 md:top-6 flex items-center gap-2 rounded-full border-2 border-black bg-white px-4 py-2 text-sm md:text-base font-semibold text-black shadow-[4px_4px_0px_#EB6E00] transition-transform duration-200 group-hover/shot:-translate-y-0.5">
+              <Eye className="size-4 md:size-5" />
+              Live preview
+            </span>
+          </button>
+        </div>
       </div>
-      <div className="mt-8 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-6 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {projects.map((project) => (
-          <div key={project.slug} className="w-[85vw] max-w-[640px] shrink-0 snap-center">
-            <ProjectCard project={project} active onOpen={() => onOpen(project)} />
-          </div>
-        ))}
-        {moreHref && (
-          <div className="w-[85vw] max-w-[640px] shrink-0 snap-center">
-            <MoreCard href={moreHref} projects={moreProjects} />
-          </div>
+
+      {/* Number badge, always visible */}
+      <span className="absolute left-3 top-2 md:left-4 z-10 grid size-8 md:size-9 place-items-center rounded-full border-2 border-black bg-white text-xs md:text-sm font-semibold text-black font-[Public_Sans]">
+        {number}
+      </span>
+
+      {/* Name: centred and vertical when closed, bottom-left when open */}
+      <div
+        className={`pointer-events-none absolute inset-0 z-10 flex ${
+          open
+            ? "flex-col items-start justify-end p-5 pr-20 md:p-8 md:pr-28 text-white"
+            : wide
+              ? "items-center justify-center"
+              : "items-center justify-start pl-16"
+        }`}
+      >
+        <SwingTitle open={open} wide={wide} className="text-5xl md:text-6xl xl:text-7xl">
+          {project.name}
+        </SwingTitle>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.45 }}
+            className="mt-3 flex max-w-xl flex-col gap-2"
+          >
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm uppercase tracking-[0.15em]">
+              <span className="bg-[#EB6E00] text-white px-2 py-0.5">{project.industry}</span>
+              {project.country && (
+                <span className="flex items-center gap-1 text-white/85">
+                  <MapPin className="size-3.5 text-[#EB6E00]" />
+                  {project.country}
+                </span>
+              )}
+            </div>
+            <p className="hidden sm:block text-base md:text-lg font-[Public_Sans] text-white/90 text-pretty">
+              {project.description}
+            </p>
+          </motion.div>
         )}
       </div>
-    </section>
-  );
-}
 
-function BrowserBar({ label }) {
-  return (
-    <div className="flex items-center gap-3 border-b-4 border-black bg-[#FFE9D1] px-3 py-2 md:px-4">
-      <span className="flex gap-1.5" aria-hidden="true">
-        <span className="size-3 rounded-full border-2 border-black bg-[#EB6E00]" />
-        <span className="size-3 rounded-full border-2 border-black bg-white" />
-        <span className="size-3 rounded-full border-2 border-black bg-white" />
-      </span>
-      <span className="flex-1 truncate rounded-full border-2 border-black bg-white px-3 py-0.5 text-xs md:text-sm font-[Public_Sans]">
-        {label}
-      </span>
-    </div>
-  );
-}
-
-function ProjectCard({ project, active, onOpen }) {
-  return (
-    <article
-      className={`group flex flex-col overflow-hidden rounded-md border-4 border-black bg-white text-black transition-shadow duration-300 ${
-        active ? "shadow-[10px_10px_0px_#000000]" : "shadow-[6px_6px_0px_#000000]"
-      }`}
-    >
-      <BrowserBar label={hostname(project.url)} />
-
-      <button
-        type="button"
-        onClick={onOpen}
-        aria-label={active ? `Open a live preview of ${project.name}` : `Show ${project.name}`}
-        className="relative block aspect-[16/10] md:aspect-[16/9] w-full overflow-hidden bg-black cursor-pointer"
-      >
-        <Image
-          src={project.image}
-          fill
-          sizes="(min-width: 768px) 56vw, 85vw"
-          alt={`Screenshot of the ${project.name} website`}
-          placeholder="blur"
-          className="object-cover object-top transition-[transform,object-position] duration-[2500ms] ease-out group-hover:scale-[1.04]"
-        />
-        <span
-          className={`absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 ${
-            active ? "group-hover:bg-black/25" : ""
-          }`}
-        >
-          <span
-            className={`flex items-center gap-2 rounded-full border-2 border-black bg-white px-5 py-2.5 font-semibold shadow-[4px_4px_0px_#EB6E00] transition-[opacity,translate] duration-300 ${
-              active
-                ? "max-md:opacity-100 md:opacity-0 md:translate-y-3 md:group-hover:opacity-100 md:group-hover:translate-y-0"
-                : "opacity-0"
-            } max-md:absolute max-md:bottom-3 max-md:right-3 max-md:px-3 max-md:py-1.5 max-md:text-sm`}
-          >
-            <Eye className="size-5 max-md:size-4" />
-            Live preview
-          </span>
-        </span>
-      </button>
-
-      <div className="flex items-end justify-between gap-4 p-4 md:p-5">
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs md:text-sm uppercase tracking-[0.15em]">
-            <span className="bg-black text-white px-2 py-0.5">{project.industry}</span>
-            {project.country && (
-              <span className="flex items-center gap-1 text-black/70">
-                <MapPin className="size-3.5 text-[#EB6E00]" />
-                {project.country}
-              </span>
-            )}
-          </div>
-          <h3 className="text-3xl xl:text-4xl font-semibold tracking-tight leading-none">{project.name}</h3>
-          <p className="text-sm md:text-base font-[Public_Sans] text-black/75 line-clamp-2 md:line-clamp-1 text-pretty">
-            {project.description}
-          </p>
-        </div>
+      {open && (
         <a
           href={project.url}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Visit the ${project.name} website`}
-          className="group/visit grid shrink-0 place-items-center size-11 md:size-14 rounded-full border-2 border-black bg-[#EB6E00] text-white transition-transform duration-300 hover:-rotate-45 hover:scale-105"
+          className="group/visit absolute bottom-5 right-5 md:bottom-8 md:right-8 z-10 grid size-12 md:size-16 place-items-center rounded-full border-2 border-black bg-[#EB6E00] text-white transition-transform duration-300 hover:-rotate-45 hover:scale-105"
         >
-          <ArrowUpRight className="size-5 md:size-7 transition-transform duration-300 group-hover/visit:rotate-45" />
+          <ArrowUpRight className="size-6 md:size-8 transition-transform duration-300 group-hover/visit:rotate-45" />
         </a>
-      </div>
-    </article>
+      )}
+    </>
   );
 }
 
-// Last slide: a white tile linking to the full project list, with the other
-// projects' screenshots fanned behind the text
-function MoreCard({ href, projects }) {
+// Last panel: link to the full project list, with the other projects'
+// screenshots fanned in the corner once it's open
+function MoreContent({ href, projects, open, wide }) {
   return (
-    <Link
-      href={href}
-      className="group relative flex h-full md:h-auto md:aspect-[16/12.5] flex-col justify-between overflow-hidden rounded-md border-4 border-black bg-white p-6 md:p-10 text-black shadow-[8px_8px_0px_#000000] transition-[translate,box-shadow] duration-200 hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[12px_12px_0px_#000000]"
-    >
-      <div className="pointer-events-none absolute -right-6 -bottom-6 w-[60%]" aria-hidden="true">
+    <>
+      <div
+        className={`pointer-events-none absolute -right-6 -bottom-6 w-[55%] transition-opacity duration-500 ${
+          open ? "opacity-100 delay-200" : "opacity-0"
+        }`}
+        aria-hidden="true"
+      >
         {projects.slice(0, 3).map((project, index) => (
           <div
             key={project.slug}
-            className="absolute bottom-0 right-0 w-full aspect-[16/10] overflow-hidden rounded-md border-4 border-black bg-white shadow-[4px_4px_0px_#000000] transition-transform duration-500 ease-out"
+            className="absolute bottom-0 right-0 w-full aspect-[16/10] overflow-hidden rounded-md border-4 border-black bg-white shadow-[4px_4px_0px_#000000]"
             style={{
               transform: `rotate(${-8 + index * 7}deg) translate(${-index * 12}%, ${-index * 6}%)`,
               zIndex: projects.length - index,
@@ -362,17 +287,39 @@ function MoreCard({ href, projects }) {
         ))}
       </div>
 
-      <span className="relative text-sm md:text-base uppercase tracking-[0.2em] text-black/60">Show more</span>
-      <span className="relative flex items-end justify-between gap-4">
-        <span className="text-4xl md:text-6xl font-semibold leading-[0.95] tracking-tight">
-          See more
-          <br />
-          projects
-        </span>
-      </span>
-      <span className="relative grid size-14 md:size-20 place-items-center rounded-full bg-[#EB6E00] text-white transition-transform duration-300 group-hover:-rotate-45">
-        <ArrowRight className="size-7 md:size-9" />
-      </span>
-    </Link>
+      <div
+        className={`absolute inset-0 z-10 flex ${
+          open
+            ? "flex-col items-start justify-between p-6 md:p-10"
+            : wide
+              ? "items-center justify-center"
+              : "items-center justify-start pl-6"
+        }`}
+      >
+        {open && (
+          <span className="text-sm md:text-base uppercase tracking-[0.2em] opacity-60">Show more</span>
+        )}
+        <SwingTitle open={open} wide={wide} className="text-5xl md:text-6xl xl:text-7xl">
+          {open ? (
+            <>
+              See more
+              <br />
+              projects
+            </>
+          ) : (
+            "SEE MORE"
+          )}
+        </SwingTitle>
+        {open && (
+          <Link
+            href={href}
+            className="grid size-14 md:size-20 place-items-center rounded-full border-2 border-black bg-[#EB6E00] text-white transition-transform duration-300 hover:-rotate-45"
+            aria-label="See more projects"
+          >
+            <ArrowRight className="size-7 md:size-9" />
+          </Link>
+        )}
+      </div>
+    </>
   );
 }
