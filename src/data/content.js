@@ -5,8 +5,8 @@
 import lorrygoImage from "@/app/assets/project2.webp";
 import poornayaImage from "@/app/assets/poornaya_img.webp";
 import glenroyImage from "@/app/assets/glenroy.webp";
-import gyraImage from "@/app/assets/thinkgyra.png";
-import stem4girlsImage from "@/app/assets/stem4girls.png";
+import gyraImage from "@/app/assets/thinkgyra.webp";
+import stem4girlsImage from "@/app/assets/stem4girls.webp";
 
 // The main call to action, repeated across the site
 export const cta = {
