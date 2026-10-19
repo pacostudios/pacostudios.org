@@ -31,11 +31,20 @@ export default function TechMarquee() {
         Technologies we build and grow on
       </h2>
 
-      <div className="flex flex-col gap-4 md:gap-6 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+      <div className="relative flex flex-col gap-4 md:gap-6">
+        {/* Edge fades as overlays: cheaper than masking the moving rows */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-[8%] bg-gradient-to-r from-background to-transparent"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-[8%] bg-gradient-to-l from-background to-transparent"
+        />
         {rows.map((row, rowIndex) => (
           <div key={rowIndex} className="group/row overflow-hidden py-2">
             <div
-              className="marquee-track flex w-max items-center group-hover/row:[animation-play-state:paused]"
+              className="marquee-track flex w-max items-center will-change-transform group-hover/row:[animation-play-state:paused]"
               style={{
                 animation: `marquee ${rowIndex === 0 ? 32 : 38}s linear infinite`,
                 animationDirection: row.reverse ? "reverse" : "normal",

@@ -25,6 +25,7 @@ import {
     const measureRef = useRef(null);
     const textPathRef = useRef(null);
     const pathRef = useRef(null);
+    const containerRef = useRef(null);
     const [spacing, setSpacing] = useState(0);
     const [offset, setOffset] = useState(0);
     const uid = useId();
@@ -57,10 +58,19 @@ import {
   
     // The animation writes startOffset straight to the DOM; it doesn't go
     // through React state, which would re-render this component every frame.
+    // Moving SVG text costs a layout per frame, so it only runs while the
+    // marquee is on screen.
     useEffect(() => {
       if (!spacing || !ready) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       let frame = 0;
+      const start = () => {
+        if (!frame) frame = requestAnimationFrame(step);
+      };
+      const stop = () => {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      };
       const step = () => {
         if (!dragRef.current && textPathRef.current) {
           const delta = dirRef.current === "right" ? speed : -speed;
@@ -73,8 +83,14 @@ import {
         }
         frame = requestAnimationFrame(step);
       };
-      frame = requestAnimationFrame(step);
-      return () => cancelAnimationFrame(frame);
+      const observer = new IntersectionObserver(([entry]) =>
+        entry.isIntersecting ? start() : stop()
+      );
+      if (containerRef.current) observer.observe(containerRef.current);
+      return () => {
+        observer.disconnect();
+        stop();
+      };
     }, [spacing, speed, ready]);
   
     const onPointerDown = (e) => {
@@ -114,6 +130,7 @@ import {
   
     return (
       <div
+        ref={containerRef}
         className="pb-[10rem] lg:pb-[15rem] flex items-center justify-center w-full overflow-x-clip"
         style={{ visibility: ready ? "visible" : "hidden", cursor: cursorStyle }}
         onPointerDown={onPointerDown}

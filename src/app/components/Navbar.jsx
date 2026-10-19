@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Logo from "../../app/assets/paco.png";
 import { Menu, X } from "lucide-react";
@@ -8,32 +8,29 @@ import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggle
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollY = useRef(0);
 
+  // Hide when scrolling down, show when scrolling up or near the top. The last
+  // position lives in a ref and work is batched per frame, so scrolling
+  // doesn't re-render the navbar (React skips same-value updates).
   useEffect(() => {
+    let frame = 0;
     const controlNavbar = () => {
-      const currentScrollY = window.scrollY;
-
-      // Show navbar when at the top
-      if (currentScrollY < 10) {
-        setIsVisible(true);
-      }
-      // Hide when scrolling down, show when scrolling up
-      else if (currentScrollY > lastScrollY) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const currentScrollY = window.scrollY;
+        setIsVisible(currentScrollY < 10 || currentScrollY < lastScrollY.current);
+        lastScrollY.current = currentScrollY;
+      });
     };
 
-    window.addEventListener("scroll", controlNavbar);
-
+    window.addEventListener("scroll", controlNavbar, { passive: true });
     return () => {
       window.removeEventListener("scroll", controlNavbar);
+      cancelAnimationFrame(frame);
     };
-  }, [lastScrollY]);
+  }, []);
 
   // Smooth scroll function
   const scrollToSection = (sectionId) => {

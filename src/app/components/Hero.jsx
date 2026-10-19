@@ -102,7 +102,6 @@ export default function Hero({ cta, locations }) {
               {locations.map((country) => (
                 <div key={country} className="flex items-center gap-2">
                   <span className="relative flex size-2">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-[#EB6E00] opacity-60 motion-safe:animate-ping" />
                     <span className="relative inline-flex size-2 rounded-full bg-[#EB6E00]" />
                   </span>
                   <span className="text-base md:text-lg font-medium">{country}</span>
