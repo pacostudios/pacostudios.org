@@ -99,8 +99,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
         <head>
+          {/* Play the home page intro once per visit: later page loads in
+              the same session show the hero straight away */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `try{sessionStorage.getItem("paco-intro-seen")?document.documentElement.setAttribute("data-intro-seen",""):sessionStorage.setItem("paco-intro-seen","1")}catch(e){}`,
+            }}
+          />
           <link rel="icon" href="/favicon.ico" sizes="any" />
           <link
             rel="icon"

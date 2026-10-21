@@ -201,6 +201,68 @@ body {
   animation: wiggle 0.5s ease-in-out infinite;
 }
 
+/* Home page intro. There's no loading screen: the hero draws itself in
+   place. Letters deepen from pale to full, the A tile warms from cream to
+   orange, and a thin line under PACO shows progress. Only opacity and
+   colour change, slowly, so nothing flashes. Keyframes with only a "from"
+   step end on the element's normal styles. */
+:root {
+  --intro-tile-from: #ffe9d1;
+}
+
+.dark {
+  --intro-tile-from: #3a2412;
+}
+
+@keyframes introInk {
+  from { opacity: 0.12; }
+}
+
+@keyframes introTile {
+  from {
+    background-color: var(--intro-tile-from);
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes introLine {
+  0% { transform: scaleX(0); opacity: 1; }
+  60% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+
+@keyframes introRise {
+  from { opacity: 0; transform: translateY(12px); }
+}
+
+.intro-ink {
+  animation: introInk 0.6s ease-in-out both;
+}
+
+.intro-tile {
+  animation: introTile 0.9s ease-in-out 0.5s both;
+}
+
+.intro-line {
+  transform-origin: left;
+  animation: introLine 1.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+.intro-rise {
+  animation: introRise 0.7s ease-out 1.2s both;
+}
+
+/* Repeat visits in the same session (flag set by a script in <head>) */
+html[data-intro-seen] .intro-ink,
+html[data-intro-seen] .intro-tile,
+html[data-intro-seen] .intro-rise {
+  animation: none;
+}
+
+html[data-intro-seen] .intro-line {
+  display: none;
+}
+
 /* Subtle film grain over the whole site */
 body::after {
   content: "";
@@ -242,5 +304,15 @@ body::after {
 
   .marquee-track {
     animation: none !important;
+  }
+
+  .intro-ink,
+  .intro-tile,
+  .intro-rise {
+    animation: none;
+  }
+
+  .intro-line {
+    display: none;
   }
 }
