@@ -1,26 +1,14 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
-import { TextAnimate } from "@/components/magicui/text-animate";
 import ProjectButton from "./ProjectButton";
 import ScrollLink from "./ScrollLink";
 import { useCursorTilt } from "@/lib/useCursorTilt";
-
-// Set by the script in the layout's <head> on repeat visits this session
-const subscribeNever = () => () => {};
-const introSeen = () =>
-  document.documentElement.hasAttribute("data-intro-seen");
 
 // The hero doubles as the loading screen: PACO draws itself in place with
 // the calm intro animations in globals.css (intro-*), then the rest rises in.
 export default function Hero({ cta, locations }) {
   const tilt = useCursorTilt();
-  const skipIntro = useSyncExternalStore(
-    subscribeNever,
-    introSeen,
-    () => false,
-  );
 
   return (
     <section
@@ -58,14 +46,7 @@ export default function Hero({ cta, locations }) {
         </div>
         <div className="absolute -bottom-8 lg:-bottom-8 right-0 left-0 flex justify-center sm:justify-end">
           <span className="text-lg lg:text-[3.3vw] font-medium text-black dark:text-white font-[Public_Sans] pr-0 sm:pr-5 lg:pr-[6rem] leading-1">
-            <TextAnimate
-              animation="slideLeft"
-              by="character"
-              delay={skipIntro ? 0 : 1.2}
-              duration={1}
-            >
-              STUDIOS
-            </TextAnimate>
+            <span className="intro-slide inline-block">STUDIOS</span>
           </span>
         </div>
       </div>

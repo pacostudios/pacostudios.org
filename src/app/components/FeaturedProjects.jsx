@@ -1,14 +1,14 @@
 "use client";
 
-import { useCallback, useState, useSyncExternalStore } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowUpRight, Eye, MapPin } from "lucide-react";
 import ProjectPreview, { hostname } from "./ProjectPreview";
 
-// Side-by-side panels from this width up; stacked panels below it
-const WIDE_QUERY = "(min-width: 768px)";
+// Panels sit side by side from the md breakpoint up and stack below it.
+// That's all done in CSS, so the server and browser render the same markup.
 // Flex weight of the open panel against 1 for each closed one
 const OPEN_GROW = 8;
 // Panels alternate orange and white; the section background takes the
@@ -19,24 +19,20 @@ const THEMES = [
 ];
 const EASE = [0.65, 0, 0.35, 1];
 
-const subscribeToQuery = (callback) => {
-  const query = window.matchMedia(WIDE_QUERY);
-  query.addEventListener("change", callback);
-  return () => query.removeEventListener("change", callback);
-};
-
 // Home page projects as an expanding accordion: hovering (or tapping) a
 // panel opens it to show the site, and its name swings from vertical to
 // horizontal. Clicking an open panel loads the live site in a preview window.
 export default function FeaturedProjects({ projects, moreProjects = [], moreHref }) {
   const [active, setActive] = useState(0);
   const [selected, setSelected] = useState(null);
-  const wide = useSyncExternalStore(
-    subscribeToQuery,
-    () => window.matchMedia(WIDE_QUERY).matches,
-    () => true
-  );
+  // The preview window mounts on the first open (it needs document.body)
+  // and then stays mounted so it can animate closed
+  const [previewUsed, setPreviewUsed] = useState(false);
   const closePreview = useCallback(() => setSelected(null), []);
+  const openPreview = (project) => {
+    setPreviewUsed(true);
+    setSelected(project);
+  };
 
   const panels = [
     ...projects.map((project) => ({ type: "project", key: project.slug, project })),
@@ -58,9 +54,12 @@ export default function FeaturedProjects({ projects, moreProjects = [], moreHref
             FEATURED WORK
           </h2>
           <p className="mt-3 text-black text-lg md:text-xl font-[Public_Sans] text-pretty">
-            {wide
-              ? "Hover a project to open it. Click to see the live site."
-              : "Tap a project to open it, then tap again to see the live site."}
+            <span className="hidden md:inline">
+              Hover a project to open it. Click to see the live site.
+            </span>
+            <span className="md:hidden">
+              Tap a project to open it, then tap again to see the live site.
+            </span>
           </p>
         </div>
         {moreHref && (
@@ -80,7 +79,6 @@ export default function FeaturedProjects({ projects, moreProjects = [], moreHref
             key={panel.key}
             index={index}
             open={active === index}
-            wide={wide}
             themeClass={THEMES[index % THEMES.length].panel}
             onActivate={() => setActive(index)}
           >
@@ -89,47 +87,37 @@ export default function FeaturedProjects({ projects, moreProjects = [], moreHref
                 project={panel.project}
                 index={index}
                 open={active === index}
-                wide={wide}
-                onOpen={() => setSelected(panel.project)}
+                onOpen={() => openPreview(panel.project)}
               />
             ) : (
               <MoreContent
                 href={moreHref}
                 projects={moreProjects}
                 open={active === index}
-                wide={wide}
               />
             )}
           </Panel>
         ))}
       </div>
 
-      <PreviewPortal project={selected} onClose={closePreview} />
+      {previewUsed && <ProjectPreview project={selected} onClose={closePreview} />}
     </section>
   );
 }
 
-// The preview renders into document.body, so wait until the page is mounted
-function PreviewPortal(props) {
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
-  return mounted ? <ProjectPreview {...props} /> : null;
-}
-
 // One accordion panel. Wide screens share the row by flex weight; narrow
 // screens stack the panels and the open one grows taller.
-function Panel({ index, open, wide, themeClass, onActivate, children }) {
+function Panel({ index, open, themeClass, onActivate, children }) {
   return (
     <div
       onPointerEnter={(e) => e.pointerType === "mouse" && onActivate()}
       onFocusCapture={onActivate}
       className={`group relative overflow-hidden rounded-md border-4 border-black ${themeClass} transition-[flex-grow,height,box-shadow] duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none ${
         open ? "shadow-[10px_10px_0px_#000000]" : "shadow-[6px_6px_0px_#000000]"
-      } ${wide ? "min-w-0 basis-0" : open ? "h-[calc(56vw+220px)]" : "h-20 shrink-0"}`}
-      style={wide ? { flexGrow: open ? OPEN_GROW : 1 } : undefined}
+      } shrink-0 md:shrink md:min-w-0 md:basis-0 md:h-auto md:[flex-grow:var(--grow)] ${
+        open ? "h-[calc(56vw+220px)]" : "h-20"
+      }`}
+      style={{ "--grow": open ? OPEN_GROW : 1 }}
     >
       {/* Closed panels are one big button that opens them */}
       {!open && (
@@ -146,16 +134,15 @@ function Panel({ index, open, wide, themeClass, onActivate, children }) {
 }
 
 // Name that sits vertically in a closed panel and swings round to
-// horizontal as the panel opens
-function SwingTitle({ open, wide, children, className = "" }) {
+// horizontal as the panel opens. Rotation and size are CSS transitions
+// (stacked panels on phones never rotate); motion animates the move.
+function SwingTitle({ open, children, className = "" }) {
   return (
     <motion.span
       layout="position"
-      initial={false}
-      animate={{ rotate: open || !wide ? 0 : -90, scale: open ? 1 : wide ? 0.42 : 0.5 }}
-      transition={{ duration: 0.7, ease: EASE, layout: { duration: 0.7, ease: EASE } }}
-      className={`block whitespace-nowrap font-semibold leading-none tracking-tight ${
-        open || wide ? "origin-center" : "origin-left"
+      transition={{ layout: { duration: 0.7, ease: EASE } }}
+      className={`block whitespace-nowrap font-semibold leading-none tracking-tight transition-[rotate,scale] duration-700 ease-[cubic-bezier(0.65,0,0.35,1)] motion-reduce:transition-none ${
+        open ? "rotate-0 scale-100" : "origin-left scale-50 md:origin-center md:-rotate-90 md:scale-[0.42]"
       } ${className}`}
     >
       {children}
@@ -163,7 +150,7 @@ function SwingTitle({ open, wide, children, className = "" }) {
   );
 }
 
-function ProjectContent({ project, index, open, wide, onOpen }) {
+function ProjectContent({ project, index, open, onOpen }) {
   const number = String(index + 1).padStart(2, "0");
 
   return (
@@ -216,12 +203,10 @@ function ProjectContent({ project, index, open, wide, onOpen }) {
         className={`pointer-events-none absolute inset-0 z-10 flex ${
           open
             ? "flex-col items-start justify-end p-5 pr-20 md:p-8 md:pr-28 text-white"
-            : wide
-              ? "items-center justify-center"
-              : "items-center justify-start pl-16"
+            : "items-center justify-start pl-16 md:justify-center md:pl-0"
         }`}
       >
-        <SwingTitle open={open} wide={wide} className="text-5xl md:text-6xl xl:text-7xl">
+        <SwingTitle open={open} className="text-5xl md:text-6xl xl:text-7xl">
           {project.name}
         </SwingTitle>
         {open && (
@@ -264,7 +249,7 @@ function ProjectContent({ project, index, open, wide, onOpen }) {
 
 // Last panel: link to the full project list, with the other projects'
 // screenshots fanned in the corner once it's open
-function MoreContent({ href, projects, open, wide }) {
+function MoreContent({ href, projects, open }) {
   return (
     <>
       <div
@@ -291,15 +276,13 @@ function MoreContent({ href, projects, open, wide }) {
         className={`absolute inset-0 z-10 flex ${
           open
             ? "flex-col items-start justify-between p-6 md:p-10"
-            : wide
-              ? "items-center justify-center"
-              : "items-center justify-start pl-6"
+            : "items-center justify-start pl-6 md:justify-center md:pl-0"
         }`}
       >
         {open && (
           <span className="text-sm md:text-base uppercase tracking-[0.2em] opacity-60">Show more</span>
         )}
-        <SwingTitle open={open} wide={wide} className="text-5xl md:text-6xl xl:text-7xl">
+        <SwingTitle open={open} className="text-5xl md:text-6xl xl:text-7xl">
           {open ? (
             <>
               See more

@@ -3,9 +3,19 @@ import {
     useRef,
     useEffect,
     useState,
-    useMemo,
-    useId
+    useMemo
   } from "react";
+
+  // Stable id for the curve, built from the props. React's useId can come
+  // out different on the server and in the browser here, and then the text
+  // can't find its path.
+  const curveId = (text, direction, curveAmount) => {
+    let hash = 0;
+    for (const char of `${text}|${direction}|${curveAmount}`) {
+      hash = (hash * 31 + char.charCodeAt(0)) | 0;
+    }
+    return `curve-${(hash >>> 0).toString(36)}`;
+  };
   
   const CurvedLoop = ({
     marqueeText = "",
@@ -28,8 +38,7 @@ import {
     const containerRef = useRef(null);
     const [spacing, setSpacing] = useState(0);
     const [offset, setOffset] = useState(0);
-    const uid = useId();
-    const pathId = `curve-${uid}`;
+    const pathId = curveId(marqueeText, direction, curveAmount);
     const pathD = `M-100,40 Q500,${40 + curveAmount} 1540,40`;
   
     const dragRef = useRef(false);
