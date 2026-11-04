@@ -1,129 +1,122 @@
 import Link from "next/link";
-import { Instagram, Linkedin, Mail, Phone } from "lucide-react";
+import { ArrowUpRight, Instagram, Linkedin, Phone } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { TextAnimate } from "@/components/magicui/text-animate";
 import { contact } from "@/data/content";
 import ScrollLink from "./ScrollLink";
 import CurrentYear from "./CurrentYear";
 
-const navLinkClass =
-  "text-sm lg:text-2xl text-center hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer";
-const contactLinkClass =
-  "text-sm lg:text-2xl hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200";
-const iconLinkClass =
-  "hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer";
+// Same layout everywhere; each page picks the colours that fit it.
+const themes = {
+  site: {
+    footer: "bg-white text-black dark:bg-black dark:text-white",
+    edge: "border-black dark:border-white",
+    rule: "border-black/20 dark:border-white/25",
+    muted: "text-black/65 dark:text-white/70",
+    icon: "border-black hover:bg-black hover:text-white dark:border-white dark:hover:bg-white dark:hover:text-black",
+  },
+  indigo: {
+    footer: "bg-[#100C24] text-[#F4F1EA]",
+    edge: "border-[#EB6E00]",
+    rule: "border-white/20",
+    muted: "text-white/70",
+    icon: "border-white/40 hover:border-[#EB6E00] hover:bg-[#EB6E00] hover:text-black",
+  },
+};
 
 const navLinks = [
-  { href: "#home", label: "01. Home" },
-  { href: "#about", label: "02. About" },
-  { href: "#work", label: "03. Work" },
+  { href: "#home", label: "Home" },
+  { href: "#about", label: "About" },
+  { href: "/work", label: "Work" },
+  { href: "#contact", label: "Contact" },
 ];
 
-export default function Footer() {
-  const [primaryPhone, secondaryPhone] = contact.phones;
+const socialLinks = [
+  { href: contact.whatsapp, label: "WhatsApp", Icon: FaWhatsapp },
+  { href: contact.instagram, label: "Instagram", Icon: Instagram },
+  { href: contact.linkedin, label: "LinkedIn", Icon: Linkedin },
+];
+
+// `wordmark` is off on pages that already end with a giant PACO of their own.
+export default function Footer({ theme = "site", wordmark = true }) {
+  const colors = themes[theme];
 
   return (
-    <footer className="bg-white dark:bg-black w-full text-black dark:text-white">
-      <div className="grid grid-cols-1 md:grid-cols-4">
-        <div className="md:col-span-2">
-          <div className="text-center text-[60px] sm:text-[80px] md:text-[120px] lg:text-[15vw] font-bold tracking-tighter">
-            <TextAnimate animation="slideLeft" by="character">
-              PACO
-            </TextAnimate>
-          </div>
+    <footer className={`w-full border-t-2 ${colors.edge} ${colors.footer}`}>
+      {wordmark && (
+        <div className={`overflow-hidden border-b ${colors.rule} text-center text-[28vw] font-bold leading-[0.95] tracking-tighter`}>
+          <TextAnimate animation="slideLeft" by="character">
+            PACO
+          </TextAnimate>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-12 px-4 py-14 md:grid-cols-[1fr_auto] md:gap-16 md:pr-28 lg:py-20 lg:pl-16">
+        <div className="min-w-0">
+          <p className={`text-sm uppercase tracking-[0.15em] ${colors.muted}`}>Start a conversation</p>
+          <a
+            href={`mailto:${contact.email}`}
+            className="group/mail mt-4 inline-flex max-w-full items-start gap-2 text-[5vw] font-bold tracking-tight transition-colors duration-200 [overflow-wrap:anywhere] hover:text-[#EB6E00] sm:text-3xl lg:text-5xl"          >
+            {contact.email}
+            <ArrowUpRight className="mt-1 size-6 shrink-0 transition-transform duration-200 group-hover/mail:translate-x-0.5 group-hover/mail:-translate-y-0.5 lg:size-10" />
+          </a>
+
+          <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+            {contact.phones.map((phone) => (
+              <li key={phone.tel}>
+                <a
+                  href={`tel:${phone.tel}`}
+                  className="inline-flex min-h-11 items-center gap-2 font-[Public_Sans] text-lg transition-colors duration-200 hover:text-[#EB6E00] lg:text-xl"
+                >
+                  <Phone aria-hidden="true" className="size-5" />
+                  {phone.display}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <ul className="mt-6 flex gap-3">
+            {socialLinks.map(({ href, label, Icon }) => (
+              <li key={label}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className={`grid size-12 place-items-center rounded-full border transition-colors duration-200 ${colors.icon}`}
+                >
+                  <Icon size={22} />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="border-l border-gray-300 grid">
-          {navLinks.map((link, index) => (
-            <div
-              key={link.href}
-              className={`${
-                index === navLinks.length - 1 ? "border-b-0" : "border-b"
-              } border-gray-300 grid place-items-center min-h-[80px]`}
-            >
-              <ScrollLink href={link.href} className={navLinkClass}>
-                {link.label}
-              </ScrollLink>
-            </div>
-          ))}
-        </div>
-
-        <div className="border-l-0 border-gray-300 grid min-w-0">
-          <div className="border border-gray-300 border-b-0 grid place-items-center min-h-[80px]">
-            <div className="py-4 px-4 max-w-full">
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <div className="w-2 h-2 bg-black dark:bg-white rounded-full mr-3"></div>
-                  <span className="text-sm lg:text-xl font-medium">Contact</span>
-                </div>
-                <div className="flex items-center space-x-4 mt-8">
-                  <Mail />
-                  <a
-                    href={`mailto:${contact.email}`}
-                    className="text-sm lg:text-base xl:text-lg [overflow-wrap:anywhere] hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
-                  >
-                    {contact.email}
-                  </a>
-                </div>
-                <hr />
-
-                <div className="flex items-center space-x-4">
-                  <Phone />
-                  <a href={`tel:${primaryPhone.tel}`} className={`${contactLinkClass} mt-2`}>
-                    {primaryPhone.display}
-                  </a>
-                </div>
-                <hr />
-                <div className="flex items-center space-x-4">
-                  <a href={`tel:${secondaryPhone.tel}`} className={`${contactLinkClass} pl-10`}>
-                    {secondaryPhone.display}
-                  </a>
-                </div>
-                <hr />
-
-                <div className="flex items-center space-x-6 mt-8">
-                  <a
-                    href={contact.whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="WhatsApp"
-                    className={iconLinkClass}
-                  >
-                    <FaWhatsapp size={28} />
-                  </a>
-                  <a
-                    href={contact.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Instagram"
-                    className={iconLinkClass}
-                  >
-                    <Instagram />
-                  </a>
-                  <a
-                    href={contact.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="LinkedIn"
-                    className={iconLinkClass}
-                  >
-                    <Linkedin />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <nav aria-label="Footer">
+          <p className={`text-sm uppercase tracking-[0.15em] ${colors.muted}`}>Explore</p>
+          <ul className="mt-4 md:min-w-64">
+            {navLinks.map((link, index) => (
+              <li key={link.label} className={`border-b ${colors.rule}`}>
+                <ScrollLink
+                  href={link.href}
+                  className="group/nav flex min-h-12 items-baseline gap-4 py-2 text-xl font-semibold transition-colors duration-200 hover:text-[#EB6E00] lg:text-2xl"
+                >
+                  <span className={`font-[Public_Sans] text-sm font-normal tabular-nums ${colors.muted}`}>
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="transition-transform duration-200 group-hover/nav:translate-x-1">{link.label}</span>
+                </ScrollLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
-      <div className="border-t border-gray-300 px-6 pt-3 pb-24 md:pb-3 flex flex-col sm:flex-row gap-2 justify-between sm:items-center">
-        <Link
-          href="/privacy"
-          className="text-sm hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 cursor-pointer"
-        >
+      <div className={`flex flex-col justify-between gap-2 border-t ${colors.rule} px-4 pb-24 pt-4 text-sm sm:flex-row sm:items-center md:pb-4 md:pr-28 lg:pl-16`}>
+        <Link href="/privacy" className="w-fit transition-colors duration-200 hover:text-[#EB6E00]">
           Privacy Policy
         </Link>
-        <span className="text-sm">
+        <span>
           © <CurrentYear /> Paco Studios
         </span>
       </div>

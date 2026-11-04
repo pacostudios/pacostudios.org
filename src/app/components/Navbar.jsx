@@ -68,8 +68,8 @@ export const Navbar = () => {
                 onClick={() => scrollToSection('home')}
               />
             </div>
-            <p className="text-black dark:text-white text-sm lg:text-xl font-semibold font-[Montserrat] hidden md:block">
-              A creative studio delivering unforgettable digital journeys.
+            <p className="text-black dark:text-white text-sm lg:text-xl font-semibold font-[Montserrat] whitespace-nowrap hidden md:block">
+              The creative digital studio
             </p>
           </div>
 

@@ -1,9 +1,11 @@
 import { Navbar } from "../components/Navbar";
 import Footer from "../components/Footer";
-import ProjectButton from "../components/ProjectButton";
-import WorkHero from "../components/WorkHero";
-import WorkGallery from "../components/WorkGallery";
-import { cta, projects, services } from "@/data/content";
+import WorkOpening from "../components/WorkOpening";
+import WorkCollage from "../components/WorkCollage";
+import WorkEnding from "../components/WorkEnding";
+import { WorkRail } from "../components/WorkIndex";
+import { cta, projects } from "@/data/content";
+import { workCollages } from "@/data/workCollages";
 
 export const metadata = {
   title: "Our Work | Paco Studios",
@@ -19,28 +21,27 @@ export default function WorkPage() {
     { label: "Countries", value: new Set(projects.map((p) => p.country).filter(Boolean)).size },
     { label: "Industries", value: new Set(projects.map((p) => p.industry)).size },
   ];
-  const serviceTitles = Object.fromEntries(services.map((s) => [s.id, s.title]));
+  const total = String(projects.length).padStart(2, "0");
+  const sections = projects.map((p) => ({ id: p.slug, label: p.name }));
 
   return (
     <>
       <Navbar />
-      <main className="bg-white dark:bg-black">
-        <WorkHero stats={stats} />
-        <WorkGallery projects={projects} serviceTitles={serviceTitles} />
-
-        <section className="bg-orange-500 px-6 md:px-16 py-16 lg:py-24 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-          <div>
-            <h2 className="text-white text-[30px] md:text-[40px] lg:text-[56px] font-normal leading-tight">
-              Your project could be next.
-            </h2>
-            <p className="text-black text-lg md:text-xl font-[Public_Sans] mt-2">
-              Tell us what you need and we&apos;ll reply with a quote within 24 hours.
-            </p>
-          </div>
-          <ProjectButton title={cta.label} href={`/${cta.href}`} />
-        </section>
+      <main className="overflow-x-clip bg-[#100C24]">
+        <WorkRail sections={sections} />
+        <WorkOpening stats={stats} sections={sections} />
+        {projects.map((project, index) => (
+          <WorkCollage
+            key={project.slug}
+            project={project}
+            index={index}
+            number={`${String(index + 1).padStart(2, "0")} / ${total}`}
+            windows={workCollages[project.slug]}
+          />
+        ))}
+        <WorkEnding label={cta.label} href={`/${cta.href}`} />
       </main>
-      <Footer />
+      <Footer theme="indigo" wordmark={false} />
     </>
   );
 }
