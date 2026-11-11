@@ -244,4 +244,11 @@ export const testimonials = [
     testimonial:
       "Our new website has given us a strong online presence. The design is professional, mobile-friendly, and highlights our services clearly. We appreciate the timely delivery and great support.",
   },
+  {
+    name: "Poornaya",
+    title: "", // TODO: real data (her role, e.g. Founder)
+    company: "",
+    testimonial:
+      "They set up my website quickly and delivered right on time. They came with helpful suggestions along the way, and even when I was busy, they took ownership and got the site shipped. I'm really happy with how it turned out.",
+  },
 ];
